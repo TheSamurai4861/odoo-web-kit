@@ -243,6 +243,10 @@ Une installation fraîche permet d'utiliser immédiatement les quatre blocs sans
 
 ## 7. Construire la démonstration et préparer la livraison
 
+> **Statut : terminé et vérifié.** Le README, les six captures, la vidéo de
+> démonstration, l'historique Git et la gate finale sont détaillés dans
+> [stage7_delivery.md](stage7_delivery.md).
+
 ### Description
 
 Transformer le module fonctionnel en preuve de candidature immédiatement

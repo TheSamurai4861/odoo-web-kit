@@ -51,11 +51,14 @@ async function authenticate(context) {
         const browserErrors = [];
         page.on("pageerror", (error) => browserErrors.push(error.message));
 
-        await page.goto(`${baseUrl}/@/?enable_editor=1&debug=assets`, {
+        // The lifecycle test exercises the production asset path. Debug assets
+        // are already covered on the persistent development database and can
+        // take more than one minute to compile from a completely cold DB.
+        await page.goto(`${baseUrl}/@/?enable_editor=1`, {
             waitUntil: "domcontentloaded",
-            timeout: 60_000,
+            timeout: 120_000,
         });
-        await page.waitForSelector("body.o_builder_open", { timeout: 60_000 });
+        await page.waitForSelector("body.o_builder_open", { timeout: 120_000 });
         const frame = page.locator(".o_website_preview iframe").last().contentFrame();
         await frame.locator("#wrapwrap > footer").waitFor({ timeout: 30_000 });
         const initialSnippets = await frame.locator("#wrap > section[data-snippet]").count();

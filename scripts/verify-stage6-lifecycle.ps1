@@ -128,6 +128,30 @@ print("fresh_registry=four_snippets")
         throw "QA Odoo did not listen on port $qaPort."
     }
 
+    # A listening socket precedes registry/routing readiness. Warm the standard
+    # web bundle before Playwright opens the editor so cold asset compilation is
+    # not charged against the browser navigation timeout.
+    $httpDeadline = (Get-Date).AddSeconds(120)
+    $httpReady = $false
+    do {
+        try {
+            $response = Invoke-WebRequest `
+                -Uri "http://127.0.0.1:$qaPort/web/login?db=$qaDatabase" `
+                -UseBasicParsing `
+                -TimeoutSec 15
+            if ($response.StatusCode -eq 200) {
+                $httpReady = $true
+                break
+            }
+        } catch {
+            Start-Sleep -Milliseconds 500
+        }
+    } while ((Get-Date) -lt $httpDeadline)
+    if (-not $httpReady) {
+        throw "QA Odoo did not become HTTP-ready on port $qaPort."
+    }
+    Write-Output "qa_http_readiness=OK"
+
     node (Join-Path $PSScriptRoot "verify-stage6-fresh-browser.cjs")
     if ($LASTEXITCODE -ne 0) {
         throw "Fresh database browser acceptance failed."

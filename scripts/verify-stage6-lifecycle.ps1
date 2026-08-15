@@ -3,21 +3,30 @@ param()
 
 $ErrorActionPreference = "Stop"
 
-$workspace = Split-Path -Parent $PSScriptRoot
-$odooRoot = Split-Path -Parent $workspace
-$runtime = Join-Path $odooRoot ".runtime"
-$python = Join-Path $odooRoot ".venv-odoo19\Scripts\python.exe"
-$odooBin = Join-Path $odooRoot "odoo-19\odoo-bin"
-$config = Join-Path $runtime "odoo-dev.conf"
-$pgBin = "C:\Program Files\PostgreSQL\16\bin"
-$qaDatabase = "webkit_qa_stage6"
-$qaPort = 8070
+. (Join-Path $PSScriptRoot "lib\dev-env.ps1")
+$dev = Get-WebKitDevEnvironment -ScriptRoot $PSScriptRoot
+$workspace = $dev.Workspace
+$runtime = $dev.Runtime
+$python = $dev.Python
+$odooBin = $dev.OdooBin
+$config = $dev.Config
+$psql = $dev.Psql
+$createdb = $dev.Createdb
+$dropdb = $dev.Dropdb
+$qaDatabase = $dev.QaDatabase
+$qaPort = $dev.QaPort
+$qaBaseUrl = $dev.QaBaseUrl
 $qaLog = Join-Path $runtime "stage6-lifecycle-$PID.log"
 $databaseCreated = $false
 $qaServerPid = $null
 
-if ($qaDatabase -ne "webkit_qa_stage6" -or $qaDatabase -eq "webkit_dev") {
+if ($qaDatabase -notmatch '^webkit_qa_[a-z0-9_]+$' -or $qaDatabase -eq $dev.Database) {
     throw "Unsafe Stage 6 database target."
+}
+foreach ($requiredPath in @($python, $odooBin, $config, $psql, $createdb, $dropdb)) {
+    if (-not $requiredPath -or -not (Test-Path -LiteralPath $requiredPath -PathType Leaf)) {
+        throw "Required lifecycle executable or configuration is missing: $requiredPath"
+    }
 }
 if (Get-NetTCPConnection -LocalPort $qaPort -State Listen -ErrorAction SilentlyContinue) {
     throw "QA port $qaPort is already in use."
@@ -49,16 +58,16 @@ try {
     $env:PGPASSWORD = [IO.File]::ReadAllText(
         (Join-Path $runtime "secrets\odoo-db-password")
     ).Trim()
-    $existing = & (Join-Path $pgBin "psql.exe") `
-        -X -h 127.0.0.1 -p 5433 `
-        -U odoo_webkit -d postgres `
+    $existing = & $psql `
+        -X -h $dev.PgHost -p $dev.PgPort `
+        -U $dev.DbUser -d postgres `
         -At -c "select 1 from pg_database where datname='$qaDatabase';"
     if ($existing -eq "1") {
         throw "QA database already exists; refusing to overwrite $qaDatabase."
     }
-    & (Join-Path $pgBin "createdb.exe") `
-        -h 127.0.0.1 -p 5433 `
-        -U odoo_webkit -T template0 -E UTF8 `
+    & $createdb `
+        -h $dev.PgHost -p $dev.PgPort `
+        -U $dev.DbUser -T template0 -E UTF8 `
         $qaDatabase
     if ($LASTEXITCODE -ne 0) {
         throw "QA database creation failed."
@@ -136,7 +145,7 @@ print("fresh_registry=four_snippets")
     do {
         try {
             $response = Invoke-WebRequest `
-                -Uri "http://127.0.0.1:$qaPort/web/login?db=$qaDatabase" `
+                -Uri "$qaBaseUrl/web/login?db=$qaDatabase" `
                 -UseBasicParsing `
                 -TimeoutSec 15
             if ($response.StatusCode -eq 200) {
@@ -249,9 +258,9 @@ print("reinstall=four_views_and_user_page_preserved")
         $env:PGPASSWORD = [IO.File]::ReadAllText(
             (Join-Path $runtime "secrets\odoo-db-password")
         ).Trim()
-        & (Join-Path $pgBin "dropdb.exe") `
-            -h 127.0.0.1 -p 5433 `
-            -U odoo_webkit `
+        & $dropdb `
+            -h $dev.PgHost -p $dev.PgPort `
+            -U $dev.DbUser `
             --force `
             $qaDatabase
         if ($LASTEXITCODE -ne 0) {

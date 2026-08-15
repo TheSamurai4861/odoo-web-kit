@@ -5,11 +5,12 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-$workspace = Split-Path -Parent $PSScriptRoot
-$odooRoot = Split-Path -Parent $workspace
-$runtime = Join-Path $odooRoot ".runtime"
-$python = Join-Path $odooRoot ".venv-odoo19\Scripts\python.exe"
-$pgBin = "C:\Program Files\PostgreSQL\16\bin"
+. (Join-Path $PSScriptRoot "lib\dev-env.ps1")
+$dev = Get-WebKitDevEnvironment -ScriptRoot $PSScriptRoot
+$workspace = $dev.Workspace
+$runtime = $dev.Runtime
+$python = $dev.Python
+$psql = $dev.Psql
 
 # Stage 4 must preserve every functional guarantee established in Stage 3.
 & (Join-Path $PSScriptRoot "verify-stage3.ps1") -Browser:$Browser
@@ -84,10 +85,10 @@ $env:PGPASSWORD = [IO.File]::ReadAllText(
     (Join-Path $runtime "secrets\odoo-db-password")
 ).Trim()
 try {
-    $moduleState = & (Join-Path $pgBin "psql.exe") `
+    $moduleState = & $psql `
         -X -v ON_ERROR_STOP=1 `
-        -h 127.0.0.1 -p 5433 `
-        -U odoo_webkit -d webkit_dev `
+        -h $dev.PgHost -p $dev.PgPort `
+        -U $dev.DbUser -d $dev.Database `
         -At -F "|" `
         -c "select name,state,latest_version from ir_module_module where name='website_webkit';"
     if ($LASTEXITCODE -ne 0 -or $moduleState -notmatch "^website_webkit\|installed\|19\.0\.") {
@@ -109,13 +110,14 @@ import re
 import requests
 from lxml import html
 
-base = "http://127.0.0.1:8069"
+base = os.environ.get("WEBKIT_BASE_URL", "http://127.0.0.1:8069").rstrip("/")
+database = os.environ.get("WEBKIT_DB", "webkit_dev")
 session = requests.Session()
 auth = session.post(base + "/web/session/authenticate", json={
     "jsonrpc": "2.0",
     "method": "call",
     "params": {
-        "db": "webkit_dev",
+        "db": database,
         "login": "admin",
         "password": os.environ["WEBKIT_ODOO_ADMIN_PASSWORD"],
     },

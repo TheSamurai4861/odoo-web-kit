@@ -3,18 +3,19 @@ param()
 
 $ErrorActionPreference = "Continue"
 
-$workspace = Split-Path -Parent $PSScriptRoot
-$odooRoot = Split-Path -Parent $workspace
-$runtime = Join-Path $odooRoot ".runtime"
+. (Join-Path $PSScriptRoot "lib\dev-env.ps1")
+$dev = Get-WebKitDevEnvironment -ScriptRoot $PSScriptRoot
+$runtime = $dev.Runtime
 $report = Join-Path $runtime "stage6-lighthouse-desktop.json"
 $launcherLog = Join-Path $runtime "stage6-lighthouse-launcher.log"
-$edge = "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
+$browser = $dev.Browser
+Assert-WebKitPath -Path $browser -Description "Chromium-based browser" -Type Leaf
 
-npx --yes lighthouse "http://127.0.0.1:8069/" `
+npx --yes lighthouse "$($dev.BaseUrl)/" `
     --preset=desktop `
     --output=json `
     --output-path=$report `
-    --chrome-path=$edge `
+    --chrome-path=$browser `
     --chrome-flags="--headless --no-sandbox --disable-gpu" `
     --only-categories=performance,accessibility,best-practices,seo `
     --quiet `

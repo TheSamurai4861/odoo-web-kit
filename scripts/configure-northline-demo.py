@@ -1,4 +1,4 @@
-"""Apply, verify or restore the Northline state in ``webkit_dev``.
+"""Apply, verify or restore the Northline state in the configured database.
 
 The script runs through ``odoo-bin shell``. It changes only the first website,
 its company and four website-specific QWeb copies. Their original values are
@@ -11,7 +11,7 @@ import os
 from pathlib import Path
 
 
-DATABASE = "webkit_dev"
+DATABASE = os.environ.get("WEBKIT_DEMO_DATABASE", "webkit_dev")
 ACTION = os.environ.get("WEBKIT_DEMO_ACTION", "").lower()
 LOGO_PATH = Path(os.environ.get("WEBKIT_DEMO_LOGO", ""))
 STATE_PATH = Path(os.environ.get("WEBKIT_DEMO_STATE", ""))
@@ -36,7 +36,7 @@ if ACTION not in {"apply", "verify", "restore"}:
 
 website = env["website"].search([], order="id", limit=1)
 if not website:
-    raise RuntimeError("No website was found in webkit_dev.")
+    raise RuntimeError(f"No website was found in {DATABASE}.")
 company = website.company_id
 
 

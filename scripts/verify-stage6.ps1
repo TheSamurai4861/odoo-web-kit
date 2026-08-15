@@ -14,10 +14,18 @@ if ($Full) {
     $Lighthouse = $true
 }
 
-$workspace = Split-Path -Parent $PSScriptRoot
-$odooRoot = Split-Path -Parent $workspace
-$odooSource = Join-Path $odooRoot "odoo-19"
-$python = Join-Path $odooRoot ".venv-odoo19\Scripts\python.exe"
+. (Join-Path $PSScriptRoot "lib\dev-env.ps1")
+$dev = Get-WebKitDevEnvironment -ScriptRoot $PSScriptRoot
+$workspace = $dev.Workspace
+$odooSource = $dev.OdooSource
+$python = $dev.Python
+
+# This gate starts with the same dependency-free checks used by CI.
+Assert-WebKitPath -Path $python -Description "Python executable" -Type Leaf
+& $python (Join-Path $PSScriptRoot "verify-portable.py")
+if ($LASTEXITCODE -ne 0) {
+    throw "Portable source validation failed."
+}
 
 # Stages 1-5 remain hard release gates for Stage 6.
 & (Join-Path $PSScriptRoot "verify-stage5.ps1") -Browser:$Browser

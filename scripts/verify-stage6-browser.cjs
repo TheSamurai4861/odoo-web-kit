@@ -1,16 +1,11 @@
 const path = require("path");
 
-const workspace = path.resolve(__dirname, "..");
-const odooRoot = path.resolve(workspace, "..");
-const runtime = path.join(odooRoot, ".runtime");
-const { chromium } = require(path.join(
+const {
+    baseUrl,
+    browserLaunchOptions,
+    chromium,
     runtime,
-    "browser-check",
-    "node_modules",
-    "playwright-core"
-));
-
-const baseUrl = "http://127.0.0.1:8069";
+} = require("./lib/browser-env.cjs");
 const expectedActions = [
     "Review your workflow",
     "See the approach",
@@ -159,10 +154,7 @@ async function verifyZoomReflow(browser) {
 }
 
 (async () => {
-    const browser = await chromium.launch({
-        executablePath: "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
-        headless: true,
-    });
+    const browser = await chromium.launch(browserLaunchOptions());
     try {
         const keyboard = await verifyKeyboardNavigation(browser);
         const zoom200 = await verifyZoomReflow(browser);

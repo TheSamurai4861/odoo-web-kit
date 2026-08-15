@@ -5,13 +5,13 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-$workspace = Split-Path -Parent $PSScriptRoot
-$odooRoot = Split-Path -Parent $workspace
-$runtime = Join-Path $odooRoot ".runtime"
-$pgCtl = "C:\Program Files\PostgreSQL\16\bin\pg_ctl.exe"
-$pgData = Join-Path $runtime "postgresql-16-webkit"
+. (Join-Path $PSScriptRoot "lib\dev-env.ps1")
+$dev = Get-WebKitDevEnvironment -ScriptRoot $PSScriptRoot
+$pgCtl = $dev.PgCtl
+$pgData = $dev.PgData
+$odooPort = ([Uri]$dev.BaseUrl).Port
 
-$odooListeners = Get-NetTCPConnection -LocalPort 8069 -State Listen -ErrorAction SilentlyContinue
+$odooListeners = Get-NetTCPConnection -LocalPort $odooPort -State Listen -ErrorAction SilentlyContinue
 foreach ($listener in $odooListeners) {
     $process = Get-Process -Id $listener.OwningProcess -ErrorAction SilentlyContinue
     if ($process -and $process.ProcessName -eq "python") {

@@ -5,13 +5,14 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-$workspace = Split-Path -Parent $PSScriptRoot
-$odooRoot = Split-Path -Parent $workspace
-$runtime = Join-Path $odooRoot ".runtime"
-$python = Join-Path $odooRoot ".venv-odoo19\Scripts\python.exe"
-$odooBin = Join-Path $odooRoot "odoo-19\odoo-bin"
-$config = Join-Path $runtime "odoo-dev.conf"
-$pgBin = "C:\Program Files\PostgreSQL\16\bin"
+. (Join-Path $PSScriptRoot "lib\dev-env.ps1")
+$dev = Get-WebKitDevEnvironment -ScriptRoot $PSScriptRoot
+$workspace = $dev.Workspace
+$runtime = $dev.Runtime
+$python = $dev.Python
+$odooBin = $dev.OdooBin
+$config = $dev.Config
+$psql = $dev.Psql
 
 & (Join-Path $PSScriptRoot "verify-dev.ps1")
 
@@ -110,10 +111,10 @@ $env:PGPASSWORD = [IO.File]::ReadAllText(
     (Join-Path $runtime "secrets\odoo-db-password")
 ).Trim()
 try {
-    $moduleState = & (Join-Path $pgBin "psql.exe") `
+    $moduleState = & $psql `
         -X -v ON_ERROR_STOP=1 `
-        -h 127.0.0.1 -p 5433 `
-        -U odoo_webkit -d webkit_dev `
+        -h $dev.PgHost -p $dev.PgPort `
+        -U $dev.DbUser -d $dev.Database `
         -At -F "|" `
         -c "select name,state,latest_version from ir_module_module where name='website_webkit';"
     if ($LASTEXITCODE -ne 0 -or $moduleState -notmatch "^website_webkit\|installed\|19\.0\.") {
@@ -135,7 +136,8 @@ import re
 import requests
 from lxml import html
 
-base = "http://127.0.0.1:8069"
+base = os.environ.get("WEBKIT_BASE_URL", "http://127.0.0.1:8069").rstrip("/")
+database = os.environ.get("WEBKIT_DB", "webkit_dev")
 snippet_ids = (
     "s_webkit_hero",
     "s_webkit_features",
@@ -147,7 +149,7 @@ auth = session.post(base + "/web/session/authenticate", json={
     "jsonrpc": "2.0",
     "method": "call",
     "params": {
-        "db": "webkit_dev",
+        "db": database,
         "login": "admin",
         "password": os.environ["WEBKIT_ODOO_ADMIN_PASSWORD"],
     },
@@ -215,7 +217,7 @@ order = document.xpath("//div[@id='wrap']/section/@data-snippet")
 assert order == list(snippet_ids), order
 print("combined_builder_registry=OK")
 print("canonical_persisted_homepage=OK")
-'@ | & $python $odooBin shell -c $config -d webkit_dev --no-http
+'@ | & $python $odooBin shell -c $config -d $dev.Database --no-http
 if ($LASTEXITCODE -ne 0) {
     throw "The Stage 3 Odoo registry validation failed."
 }

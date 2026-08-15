@@ -1,17 +1,13 @@
-const fs = require("fs");
 const path = require("path");
 
-const workspace = path.resolve(__dirname, "..");
-const odooRoot = path.resolve(workspace, "..");
-const runtime = path.join(odooRoot, ".runtime");
-const { chromium } = require(path.join(
+const {
+    baseUrl,
+    browserLaunchOptions,
+    chromium,
+    database,
+    getOdooAdminPassword,
     runtime,
-    "browser-check",
-    "node_modules",
-    "playwright-core"
-));
-
-const baseUrl = "http://127.0.0.1:8069";
+} = require("./lib/browser-env.cjs");
 const widths = [1440, 1024, 768, 390, 360];
 const snippetIds = [
     "s_webkit_hero",
@@ -19,10 +15,7 @@ const snippetIds = [
     "s_webkit_trust",
     "s_webkit_cta",
 ];
-const password = fs.readFileSync(
-    path.join(runtime, "secrets", "odoo-admin-password"),
-    "utf8"
-).trim();
+const password = getOdooAdminPassword();
 
 function luminance([red, green, blue]) {
     const channels = [red, green, blue].map((channel) => {
@@ -53,7 +46,7 @@ async function authenticate(context) {
         data: {
             jsonrpc: "2.0",
             method: "call",
-            params: { db: "webkit_dev", login: "admin", password },
+            params: { db: database, login: "admin", password },
             id: 1,
         },
     });
@@ -385,10 +378,7 @@ async function inspectEditor(browser) {
 }
 
 (async () => {
-    const browser = await chromium.launch({
-        executablePath: "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
-        headless: true,
-    });
+    const browser = await chromium.launch(browserLaunchOptions());
     try {
         const responsive = [];
         for (const width of widths) {

@@ -3,15 +3,16 @@ param()
 
 $ErrorActionPreference = "Stop"
 
-$workspace = Split-Path -Parent $PSScriptRoot
-$odooRoot = Split-Path -Parent $workspace
-$runtime = Join-Path $odooRoot ".runtime"
-$python = Join-Path $odooRoot ".venv-odoo19\Scripts\python.exe"
-$pgBin = "C:\Program Files\PostgreSQL\16\bin"
+. (Join-Path $PSScriptRoot "lib\dev-env.ps1")
+$dev = Get-WebKitDevEnvironment -ScriptRoot $PSScriptRoot
+$runtime = $dev.Runtime
+$python = $dev.Python
+$pgIsReady = $dev.PgIsReady
+$psql = $dev.Psql
 $dbPasswordFile = Join-Path $runtime "secrets\odoo-db-password"
 $adminPasswordFile = Join-Path $runtime "secrets\odoo-admin-password"
 
-foreach ($requiredPath in @($python, $dbPasswordFile, $adminPasswordFile)) {
+foreach ($requiredPath in @($python, $pgIsReady, $psql, $dbPasswordFile, $adminPasswordFile)) {
     if (-not (Test-Path -LiteralPath $requiredPath)) {
         throw "Required path is missing: $requiredPath"
     }
@@ -23,17 +24,17 @@ if ($LASTEXITCODE -ne 0) {
     throw "The Python environment has broken dependencies."
 }
 
-& (Join-Path $pgBin "pg_isready.exe") -h 127.0.0.1 -p 5433
+& $pgIsReady -h $dev.PgHost -p $dev.PgPort
 if ($LASTEXITCODE -ne 0) {
     throw "PostgreSQL is not ready."
 }
 
 $env:PGPASSWORD = [IO.File]::ReadAllText($dbPasswordFile).Trim()
 try {
-    & (Join-Path $pgBin "psql.exe") `
+    & $psql `
         -X -v ON_ERROR_STOP=1 `
-        -h 127.0.0.1 -p 5433 `
-        -U odoo_webkit -d webkit_dev `
+        -h $dev.PgHost -p $dev.PgPort `
+        -U $dev.DbUser -d $dev.Database `
         -At -c "select current_user, current_database(), current_setting('server_version');"
     if ($LASTEXITCODE -ne 0) {
         throw "The application database check failed."
@@ -48,13 +49,14 @@ try {
 import os
 import requests
 
-base = "http://127.0.0.1:8069"
+base = os.environ.get("WEBKIT_BASE_URL", "http://127.0.0.1:8069").rstrip("/")
+database = os.environ.get("WEBKIT_DB", "webkit_dev")
 session = requests.Session()
 payload = {
     "jsonrpc": "2.0",
     "method": "call",
     "params": {
-        "db": "webkit_dev",
+        "db": database,
         "login": "admin",
         "password": os.environ["WEBKIT_ODOO_ADMIN_PASSWORD"],
     },

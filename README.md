@@ -87,9 +87,9 @@ XML/SVG parsing, package budgets and Lighthouse.
 .\scripts\verify-stage7.ps1 -Full
 ```
 
-Latest accepted Lighthouse desktop run: **86 performance, 95 accessibility,
-96 best practices and 100 SEO**. Web Kit itself transfers 5,877 bytes across
-two SVG requests, with no public JavaScript or failed resource.
+The documented Stage 6 Lighthouse desktop reference is **86 performance, 95
+accessibility, 96 best practices and 100 SEO**. Web Kit itself transfers 5,877
+bytes across two SVG requests, with no public JavaScript or failed resource.
 
 Detailed evidence is available in
 [the Stage 7 delivery report](docs/stage7_delivery.md).

@@ -6,9 +6,10 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-$workspace = Split-Path -Parent $PSScriptRoot
-$odooRoot = Split-Path -Parent $workspace
-$python = Join-Path $odooRoot ".venv-odoo19\Scripts\python.exe"
+. (Join-Path $PSScriptRoot "lib\dev-env.ps1")
+$dev = Get-WebKitDevEnvironment -ScriptRoot $PSScriptRoot
+$workspace = $dev.Workspace
+$python = $dev.Python
 $video = Join-Path $workspace "docs\media\odoo-web-kit-demo.mp4"
 
 & (Join-Path $PSScriptRoot "verify-stage6.ps1") -Full:$Full
@@ -160,13 +161,22 @@ print(f"demo_video_bytes={video.stat().st_size}")
 
     $probe = ffprobe -v error `
         -select_streams v:0 `
-        -show_entries "stream=codec_name,width,height,pix_fmt:format=duration,size" `
+        -show_entries "stream=codec_name,width,height,pix_fmt:format=duration,size:format_tags=comment" `
         -of json `
         $video | ConvertFrom-Json
     if ($LASTEXITCODE -ne 0) {
         throw "Unable to probe the Stage 7 demo video."
     }
     $stream = $probe.streams | Select-Object -First 1
+    $repositoryEvidence = ""
+    if ($null -ne $probe.format.tags) {
+        $commentProperty = $probe.format.tags.PSObject.Properties |
+            Where-Object { $_.Name -eq "comment" } |
+            Select-Object -First 1
+        if ($null -ne $commentProperty) {
+            $repositoryEvidence = [string]$commentProperty.Value
+        }
+    }
     $duration = [double]::Parse(
         $probe.format.duration,
         [Globalization.CultureInfo]::InvariantCulture
@@ -176,7 +186,8 @@ print(f"demo_video_bytes={video.stat().st_size}")
         $stream.codec_name -ne "h264" -or
         $stream.width -ne 1280 -or
         $stream.height -ne 720 -or
-        $stream.pix_fmt -ne "yuv420p"
+        $stream.pix_fmt -ne "yuv420p" -or
+        $repositoryEvidence -notmatch '^Repository: https://github\.com/[^/\s]+/[^/\s]+$'
     ) {
         throw "The Stage 7 demo video does not meet the delivery contract."
     }
@@ -184,6 +195,7 @@ print(f"demo_video_bytes={video.stat().st_size}")
         "demo_video={0:N3}s|{1}|{2}x{3}|{4}" -f
         $duration, $stream.codec_name, $stream.width, $stream.height, $stream.pix_fmt
     )
+    Write-Output "demo_video_$($repositoryEvidence -replace ': ', '=')"
 
     if (-not (Test-Path -LiteralPath ".git" -PathType Container)) {
         throw "The delivery workspace is not a Git repository."

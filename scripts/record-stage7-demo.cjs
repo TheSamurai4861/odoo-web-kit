@@ -1,31 +1,30 @@
 const fs = require("fs");
 const path = require("path");
 
-const workspace = path.resolve(__dirname, "..");
-const odooRoot = path.resolve(workspace, "..");
-const runtime = path.join(odooRoot, ".runtime");
-const media = path.join(workspace, "docs", "media");
-const rawVideo = path.join(runtime, "stage7-demo-raw.webm");
-const { chromium } = require(path.join(
+const {
+    baseUrl,
+    browserLaunchOptions,
+    chromium,
+    database,
+    getOdooAdminPassword,
     runtime,
-    "browser-check",
-    "node_modules",
-    "playwright-core"
-));
-
-const baseUrl = "http://127.0.0.1:8069";
+    workspace,
+} = require("./lib/browser-env.cjs");
+const media = process.env.WEBKIT_MEDIA_DIR || path.join(workspace, "docs", "media");
+const rawVideo = path.join(runtime, "stage7-demo-raw.webm");
 const demoTitle = "Map client handoffs directly in Odoo.";
-const password = fs.readFileSync(
-    path.join(runtime, "secrets", "odoo-admin-password"),
-    "utf8"
-).trim();
+const password = getOdooAdminPassword();
+const repositoryUrl = process.env.WEBKIT_REPOSITORY_URL;
+if (!repositoryUrl || new URL(repositoryUrl).protocol !== "https:") {
+    throw new Error("WEBKIT_REPOSITORY_URL must contain the public HTTPS repository URL.");
+}
 
 async function authenticate(context) {
     const response = await context.request.post(`${baseUrl}/web/session/authenticate`, {
         data: {
             jsonrpc: "2.0",
             method: "call",
-            params: { db: "webkit_dev", login: "admin", password },
+            params: { db: database, login: "admin", password },
             id: 1,
         },
     });
@@ -60,10 +59,12 @@ async function pause(page, milliseconds) {
 
 (async () => {
     fs.mkdirSync(media, { recursive: true });
-    const browser = await chromium.launch({
-        executablePath: "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
-        headless: true,
-    });
+    if (fs.existsSync(rawVideo)) {
+        fs.unlinkSync(rawVideo);
+    }
+    const browser = await chromium.launch(browserLaunchOptions({
+        args: ["--disable-features=SpellcheckService,UseBrowserSpellChecker"],
+    }));
     let context;
     let originalHomepage;
     let video;
@@ -181,7 +182,27 @@ async function pause(page, milliseconds) {
         await pause(page, 4_000);
 
         await page.goto(`${baseUrl}/`, { waitUntil: "networkidle", timeout: 60_000 });
-        await pause(page, 5_000);
+        await page.evaluate((url) => {
+            const label = document.createElement("div");
+            label.setAttribute("data-webkit-repository", "");
+            label.textContent = url;
+            Object.assign(label.style, {
+                position: "fixed",
+                left: "50%",
+                top: "78px",
+                transform: "translateX(-50%)",
+                zIndex: "2147483647",
+                padding: "12px 20px",
+                borderRadius: "999px",
+                background: "rgba(20, 22, 31, 0.94)",
+                color: "white",
+                font: "600 18px/1.3 system-ui, sans-serif",
+                boxShadow: "0 12px 36px rgba(0, 0, 0, 0.3)",
+                whiteSpace: "nowrap",
+            });
+            document.body.append(label);
+        }, repositoryUrl);
+        await pause(page, 6_000);
 
         const restoreContext = await browser.newContext();
         await authenticate(restoreContext);
@@ -195,7 +216,7 @@ async function pause(page, milliseconds) {
         await context.close();
         context = undefined;
         await video.saveAs(rawVideo);
-        console.log(JSON.stringify({ rawVideo, restored: true }, null, 2));
+        console.log(JSON.stringify({ rawVideo, repositoryUrl, restored: true }, null, 2));
     } finally {
         if (originalHomepage) {
             const recoveryContext = await browser.newContext();

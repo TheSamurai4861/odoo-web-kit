@@ -1,22 +1,17 @@
 const fs = require("fs");
 const path = require("path");
 
-const workspace = path.resolve(__dirname, "..");
-const odooRoot = path.resolve(workspace, "..");
-const runtime = path.join(odooRoot, ".runtime");
-const media = path.join(workspace, "docs", "media");
-const { chromium } = require(path.join(
+const {
+    baseUrl,
+    browserLaunchOptions,
+    chromium,
+    database,
+    getOdooAdminPassword,
     runtime,
-    "browser-check",
-    "node_modules",
-    "playwright-core"
-));
-
-const baseUrl = "http://127.0.0.1:8069";
-const password = fs.readFileSync(
-    path.join(runtime, "secrets", "odoo-admin-password"),
-    "utf8"
-).trim();
+    workspace,
+} = require("./lib/browser-env.cjs");
+const media = process.env.WEBKIT_MEDIA_DIR || path.join(workspace, "docs", "media");
+const password = getOdooAdminPassword();
 const expectedOrder = [
     "s_webkit_hero",
     "s_webkit_features",
@@ -29,7 +24,7 @@ async function authenticate(context) {
         data: {
             jsonrpc: "2.0",
             method: "call",
-            params: { db: "webkit_dev", login: "admin", password },
+            params: { db: database, login: "admin", password },
             id: 1,
         },
     });
@@ -151,6 +146,9 @@ async function openEditor(page) {
         timeout: 60_000,
     });
     await page.waitForSelector("body.o_builder_open", { timeout: 60_000 });
+    await page.locator("#blocks-tab.active[aria-selected='true']").waitFor({
+        timeout: 30_000,
+    });
     const frame = page.locator(".o_website_preview iframe").last().contentFrame();
     await frame.locator(".s_webkit_hero").first().waitFor({ timeout: 30_000 });
     return frame;
@@ -158,10 +156,7 @@ async function openEditor(page) {
 
 (async () => {
     fs.mkdirSync(media, { recursive: true });
-    const browser = await chromium.launch({
-        executablePath: "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
-        headless: true,
-    });
+    const browser = await chromium.launch(browserLaunchOptions());
     const browserErrors = [];
     try {
         const desktopContext = await browser.newContext({

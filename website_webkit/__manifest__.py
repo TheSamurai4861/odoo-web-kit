@@ -1,7 +1,7 @@
 {
     "name": "Odoo Web Kit",
     "summary": "Modern building blocks for Odoo Website",
-    "version": "19.0.4.0.0",
+    "version": "19.0.5.0.0",
     "category": "Website/Website",
     "author": "Mattéo Vanderheyden",
     "license": "LGPL-3",

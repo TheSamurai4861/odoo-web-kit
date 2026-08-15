@@ -40,7 +40,7 @@ async function authenticate(context) {
 }
 
 async function assertHomepage(page) {
-    const images = page.locator("#wrap img");
+    const images = page.locator("img:visible");
     for (let index = 0; index < await images.count(); index++) {
         const image = images.nth(index);
         await image.scrollIntoViewIfNeeded();
@@ -59,16 +59,84 @@ async function assertHomepage(page) {
             (section) => section.dataset.snippet
         ),
         h1: document.querySelector("#wrap h1")?.textContent.trim(),
-        brokenImages: [...document.querySelectorAll("#wrap img")]
+        brokenImages: [...document.querySelectorAll("img")]
+            .filter((image) => image.getClientRects().length)
             .filter((image) => !image.complete || !image.naturalWidth)
             .map((image) => image.src),
+        northlineLogo: Boolean(document.querySelector(
+            "header img[alt='Northline'], header img[src*='/website/'][src*='/logo/']"
+        )),
+        publicChromeAbsent: !document.querySelector(
+            "#oe_main_menu_navbar, .o_frontend_to_backend_nav, body.o_builder_open"
+        ),
+        requiredText: [
+            "Odoo workflows for service teams",
+            "Belgian service teams",
+            "hello@northline.example",
+            "Review a workflow",
+            "fictional demo",
+            "A fictional Odoo workflow studio",
+            "Northline demo",
+        ].filter((marker) => !document.body.textContent.includes(marker)),
+        forbiddenText: [
+            "Your Logo",
+            "yourcompany",
+            "+1 555",
+            "Company name",
+            "passionate people",
+        ].filter((marker) => document.body.textContent.includes(marker)),
+        invalidHrefs: [...document.querySelectorAll("header a, #wrap a, footer a")]
+            .filter((anchor) => {
+                const href = anchor.getAttribute("href");
+                if (!href || /^javascript:/i.test(href)) {
+                    return true;
+                }
+                if (href !== "#") {
+                    return false;
+                }
+                const target = anchor.getAttribute("data-bs-target");
+                return !target || !document.querySelector(target);
+            })
+            .map((anchor) => anchor.outerHTML.slice(0, 160)),
+        localLinks: [...new Set([...document.querySelectorAll(
+            "header a[href], #wrap a[href], footer a[href]"
+        )].map((anchor) => anchor.href).filter((href) => {
+            const url = new URL(href);
+            return url.origin === location.origin && ["http:", "https:"].includes(url.protocol);
+        }))],
         documentWidth: document.documentElement.scrollWidth,
         viewportWidth: document.documentElement.clientWidth,
     }));
+    const deadLinks = [];
+    for (const href of evidence.localLinks) {
+        const url = new URL(href);
+        if (url.pathname === "/" && url.hash) {
+            const targetExists = await page.evaluate(
+                (selector) => Boolean(document.querySelector(selector)),
+                url.hash
+            );
+            if (!targetExists) {
+                deadLinks.push(href);
+            }
+            continue;
+        }
+        const response = await page.request.get(href, { timeout: 30_000 });
+        if (!response.ok()) {
+            deadLinks.push(`${href} (${response.status()})`);
+        }
+    }
+    evidence.deadLinks = deadLinks;
+    delete evidence.localLinks;
     if (
         JSON.stringify(evidence.order) !== JSON.stringify(expectedOrder) ||
         !evidence.h1 ||
         evidence.brokenImages.length ||
+        !evidence.northlineLogo ||
+        !evidence.publicChromeAbsent ||
+        evidence.requiredText.length ||
+        evidence.forbiddenText.length ||
+        evidence.invalidHrefs.length ||
+        evidence.deadLinks.length ||
         evidence.documentWidth !== evidence.viewportWidth
     ) {
         throw new Error(`Invalid Northline homepage: ${JSON.stringify(evidence)}.`);

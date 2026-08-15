@@ -9,7 +9,7 @@ Web Kit adds a dedicated category to the Odoo Website Builder with four
 production-ready snippets: Hero, Features, Trust and CTA. They can be dragged,
 edited, duplicated, reordered and saved with Odoo's standard authoring tools.
 
-[Watch the 72-second product demo](docs/media/odoo-web-kit-demo.mp4)
+[Watch the 81-second product demo](docs/media/odoo-web-kit-demo.mp4)
 
 ## Why
 

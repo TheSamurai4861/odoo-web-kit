@@ -2,16 +2,16 @@
 <odoo>
 
 <template id="s_webkit_features" name="Web Kit Features">
-    <section class="s_webkit_features o_cc o_cc2 pt96 pb96">
+    <section id="northline-approach" class="s_webkit_features o_cc o_cc2 pt96 pb96">
         <div class="container">
             <div class="row align-items-end g-4 mb-5">
                 <div class="col-lg-7">
-                    <p class="webkit_eyebrow text-uppercase fw-semibold mb-2">What we bring</p>
-                    <h2 class="display-4 mb-0">Clarity at every stage of your growth.</h2>
+                    <p class="webkit_eyebrow text-uppercase fw-semibold mb-2">How Northline works</p>
+                    <h2 class="display-4 mb-0">From first click to project handover.</h2>
                 </div>
                 <div class="col-lg-5">
                     <p class="lead mb-0">
-                        Practical digital foundations designed around your teams, your workflows and your ambitions.
+                        One customer journey across Website, CRM and Project instead of another set of disconnected pages.
                     </p>
                 </div>
             </div>
@@ -21,10 +21,10 @@
                         <span class="webkit_feature_icon d-inline-flex align-items-center justify-content-center rounded-3 mb-4">
                             <i class="fa fa-object-group" aria-hidden="true"/>
                         </span>
-                        <h3 class="h4 mb-3">Design</h3>
-                        <p class="mb-4">Interfaces built around real business objectives, not short-lived visual trends.</p>
+                        <h3 class="h4 mb-3">Clarify</h3>
+                        <p class="mb-4">Shape the website around one real enquiry, the information it needs and the next decision.</p>
                         <a href="/contactus" class="webkit_text_link fw-semibold o_translate_inline">
-                            Shape the experience <i class="fa fa-arrow-right ms-1" aria-hidden="true"/>
+                            Map the entry point <i class="fa fa-arrow-right ms-1" aria-hidden="true"/>
                         </a>
                     </article>
                 </div>
@@ -33,10 +33,10 @@
                         <span class="webkit_feature_icon d-inline-flex align-items-center justify-content-center rounded-3 mb-4">
                             <i class="fa fa-plug" aria-hidden="true"/>
                         </span>
-                        <h3 class="h4 mb-3">Integration</h3>
-                        <p class="mb-4">Connected workflows that replace isolated tools with one coherent way of working.</p>
+                        <h3 class="h4 mb-3">Connect</h3>
+                        <p class="mb-4">Pass qualified context into CRM without retyping the customer's request or losing ownership.</p>
                         <a href="/contactus" class="webkit_text_link fw-semibold o_translate_inline">
-                            Connect your tools <i class="fa fa-arrow-right ms-1" aria-hidden="true"/>
+                            Connect the handoff <i class="fa fa-arrow-right ms-1" aria-hidden="true"/>
                         </a>
                     </article>
                 </div>
@@ -45,10 +45,10 @@
                         <span class="webkit_feature_icon d-inline-flex align-items-center justify-content-center rounded-3 mb-4">
                             <i class="fa fa-line-chart" aria-hidden="true"/>
                         </span>
-                        <h3 class="h4 mb-3">Growth</h3>
-                        <p class="mb-4">Digital foundations designed to evolve smoothly as your company and needs expand.</p>
+                        <h3 class="h4 mb-3">Deliver</h3>
+                        <p class="mb-4">Give the project team the agreed scope, contact history and next action from day one.</p>
                         <a href="/contactus" class="webkit_text_link fw-semibold o_translate_inline">
-                            Prepare for growth <i class="fa fa-arrow-right ms-1" aria-hidden="true"/>
+                            Prepare delivery <i class="fa fa-arrow-right ms-1" aria-hidden="true"/>
                         </a>
                     </article>
                 </div>

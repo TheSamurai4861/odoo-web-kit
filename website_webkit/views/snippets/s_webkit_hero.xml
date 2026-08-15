@@ -9,32 +9,32 @@
                     <p class="webkit_eyebrow mb-3">
                         <span class="webkit_badge d-inline-flex align-items-center gap-2 rounded-pill px-3 py-2">
                             <i class="fa fa-circle" aria-hidden="true"/>
-                            Built for growing teams
+                            Odoo workflows for service teams
                         </span>
                     </p>
                     <h1 class="display-2 mb-4">
-                        Your operations deserve a <span class="webkit_accent">better digital experience.</span>
+                        Turn scattered client work into <span class="webkit_accent">one clear Odoo journey.</span>
                     </h1>
                     <p class="lead mb-4">
-                        Northline helps growing businesses simplify their digital workflows and turn complex processes into clear experiences.
+                        Northline connects Website, CRM and Project so Belgian service teams carry the right context from first enquiry to delivery.
                     </p>
                     <div class="d-flex flex-column flex-sm-row align-items-sm-center gap-3 mb-5">
                         <a href="/contactus" class="btn btn-primary btn-lg o_translate_inline">
-                            Start a project
+                            Review your workflow
                             <i class="fa fa-arrow-right ms-2" aria-hidden="true"/>
                         </a>
-                        <a href="/contactus" class="btn btn-outline-primary btn-lg o_translate_inline">
-                            Discover our services
+                        <a href="#northline-approach" class="btn btn-outline-primary btn-lg o_translate_inline">
+                            See the approach
                         </a>
                     </div>
                     <div class="webkit_trust_strip d-flex flex-wrap align-items-center gap-3 gap-md-4">
                         <span class="d-inline-flex align-items-center gap-2">
                             <i class="fa fa-check-circle text-o-color-1" aria-hidden="true"/>
-                            No-code editing
+                            Native Odoo editing
                         </span>
                         <span class="d-inline-flex align-items-center gap-2">
                             <i class="fa fa-check-circle text-o-color-1" aria-hidden="true"/>
-                            Built for Odoo 19
+                            No public JavaScript
                         </span>
                     </div>
                 </div>
@@ -52,8 +52,8 @@
                                 <i class="fa fa-line-chart" aria-hidden="true"/>
                             </span>
                             <span>
-                                <strong class="d-block">+28%</strong>
-                                <small>Team efficiency</small>
+                                <strong class="d-block">−32%</strong>
+                                <small>manual handoffs</small>
                             </span>
                         </div>
                     </div>

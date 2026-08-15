@@ -86,7 +86,7 @@ import os
 from lxml import etree
 
 module = env["ir.module.module"].search([("name", "=", "website_webkit")], limit=1)
-assert module.state == "installed" and module.latest_version == "19.0.4.0.0"
+assert module.state == "installed" and module.latest_version == "19.0.5.0.0"
 for xmlid in ("s_webkit_hero", "s_webkit_features", "s_webkit_trust", "s_webkit_cta"):
     view = env.ref(f"website_webkit.{xmlid}")
     assert view.active and view.type == "qweb"
@@ -96,7 +96,7 @@ for xmlid in ("s_webkit_hero", "s_webkit_features", "s_webkit_trust", "s_webkit_
     assert combined.count(f't-snippet="website_webkit.{xmlid}"') == 1
 env.ref("base.user_admin").write({"password": os.environ["WEBKIT_ODOO_ADMIN_PASSWORD"]})
 env.cr.commit()
-print("fresh_install=installed|19.0.4.0.0")
+print("fresh_install=installed|19.0.5.0.0")
 print("fresh_registry=four_snippets")
 '@
     Remove-Item Env:WEBKIT_ODOO_ADMIN_PASSWORD -ErrorAction SilentlyContinue
@@ -172,7 +172,7 @@ print("fresh_registry=four_snippets")
 from lxml import etree
 
 module = env["ir.module.module"].search([("name", "=", "website_webkit")], limit=1)
-assert module.state == "installed" and module.latest_version == "19.0.4.0.0"
+assert module.state == "installed" and module.latest_version == "19.0.5.0.0"
 homepage = env["ir.ui.view"].search([
     ("key", "=", "website.homepage"),
     ("website_id", "!=", False),
@@ -214,7 +214,7 @@ print("uninstall=views_and_external_ids_removed")
 from lxml import etree
 
 module = env["ir.module.module"].search([("name", "=", "website_webkit")], limit=1)
-assert module.state == "installed" and module.latest_version == "19.0.4.0.0"
+assert module.state == "installed" and module.latest_version == "19.0.5.0.0"
 for xmlid in ("s_webkit_hero", "s_webkit_features", "s_webkit_trust", "s_webkit_cta"):
     assert env.ref(f"website_webkit.{xmlid}").active
 homepage = env["ir.ui.view"].search([

@@ -29,7 +29,7 @@ from lxml import etree
 
 root = Path("website_webkit")
 manifest = ast.literal_eval((root / "__manifest__.py").read_text(encoding="utf-8"))
-assert manifest["version"] == "19.0.4.0.0"
+assert manifest["version"] == "19.0.5.0.0"
 assert manifest["assets"]["website.website_builder_assets"] == [
     "website_webkit/static/src/builder/**/*",
 ]
@@ -120,8 +120,8 @@ try {
         -U odoo_webkit -d webkit_dev `
         -At -F "|" `
         -c "select name,state,latest_version from ir_module_module where name='website_webkit';"
-    if ($LASTEXITCODE -ne 0 -or $moduleState -ne "website_webkit|installed|19.0.4.0.0") {
-        throw "website_webkit 19.0.4.0.0 is not installed."
+    if ($LASTEXITCODE -ne 0 -or $moduleState -ne "website_webkit|installed|19.0.5.0.0") {
+        throw "website_webkit 19.0.5.0.0 is not installed."
     }
     Write-Output "module_state=$moduleState"
 } finally {

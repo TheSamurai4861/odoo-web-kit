@@ -60,7 +60,7 @@ npx playwright-core install ffmpeg
 ```
 
 Media assertions check PNG signatures and dimensions, file-size budgets and the
-video stream contract. The committed demonstration is 72.134 seconds, H.264,
+video stream contract. The committed demonstration is 80.567 seconds, H.264,
 1280 × 720 and `yuv420p`.
 
 ## Functional acceptance matrix
@@ -104,9 +104,10 @@ The release checks exclude ignored Python caches and enforce these upper bounds:
 | Builder assets | 8,192 bytes |
 | Public Web Kit JavaScript | 0 requests |
 
-At the documented Stage 6 reference, the addon contained 22 deliverable files
-for 32,935 bytes. The public page requested two Web Kit SVG files for 5,877
-transferred bytes.
+At the documented Stage 6 reference, before the Northline logo was added, the
+addon contained 22 deliverable files for 32,935 bytes. Current package totals
+are emitted by `verify-stage6.ps1`; the public-page budget remains enforced by
+Lighthouse.
 
 ## Lighthouse reference
 
@@ -150,7 +151,7 @@ consolidation with:
 - clean uninstall and reinstall;
 - `qa_database_cleanup=OK`;
 - Lighthouse 89 / 95 / 100 / 100 on that run;
-- six valid screenshots and the 72.134-second video;
+- six valid screenshots and the 80.567-second video;
 - no unexpected current-process Odoo log issue.
 
 The gate must be run again after any source, branding or media change intended

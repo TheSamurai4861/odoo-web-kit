@@ -12,12 +12,12 @@ const { chromium } = require(path.join(
 
 const baseUrl = "http://127.0.0.1:8069";
 const expectedActions = [
-    "Start a project",
-    "Discover our services",
-    "Shape the experience",
-    "Connect your tools",
-    "Prepare for growth",
-    "Let's talk",
+    "Review your workflow",
+    "See the approach",
+    "Map the entry point",
+    "Connect the handoff",
+    "Prepare delivery",
+    "Discuss your handoffs",
 ];
 const expectedOrder = [
     "s_webkit_hero",
@@ -91,8 +91,20 @@ async function verifyZoomReflow(browser) {
     page.on("pageerror", (error) => browserErrors.push(error.message));
     try {
         await page.goto(`${baseUrl}/`, { waitUntil: "networkidle", timeout: 60_000 });
-        await page.locator(".webkit_avatar").scrollIntoViewIfNeeded();
-        await page.waitForTimeout(250);
+        const images = page.locator("#wrap img");
+        for (let index = 0; index < await images.count(); index++) {
+            const image = images.nth(index);
+            await image.scrollIntoViewIfNeeded();
+            await image.evaluate((element) => {
+                if (element.complete) {
+                    return;
+                }
+                return new Promise((resolve) => {
+                    element.addEventListener("load", resolve, { once: true });
+                    element.addEventListener("error", resolve, { once: true });
+                });
+            });
+        }
         const evidence = await page.evaluate(() => ({
             devicePixelRatio,
             viewportWidth: document.documentElement.clientWidth,

@@ -14,7 +14,7 @@ const { chromium } = require(path.join(
 ));
 
 const baseUrl = "http://127.0.0.1:8069";
-const demoTitle = "Clear workflows, built directly in Odoo.";
+const demoTitle = "Map client handoffs directly in Odoo.";
 const password = fs.readFileSync(
     path.join(runtime, "secrets", "odoo-admin-password"),
     "utf8"
@@ -75,6 +75,22 @@ async function pause(page, milliseconds) {
                 size: { width: 1280, height: 720 },
             },
         });
+        const page = await context.newPage();
+        video = page.video();
+        await page.goto(`${baseUrl}/`, { waitUntil: "networkidle", timeout: 60_000 });
+        if (await page.locator(
+            "#oe_main_menu_navbar, .o_frontend_to_backend_nav, body.o_builder_open"
+        ).count()) {
+            throw new Error("The opening walkthrough is not an anonymous public session.");
+        }
+        await pause(page, 4_000);
+        await page.locator(".s_webkit_features").scrollIntoViewIfNeeded();
+        await pause(page, 3_000);
+        await page.locator(".s_webkit_trust").scrollIntoViewIfNeeded();
+        await pause(page, 3_000);
+        await page.locator(".s_webkit_cta").scrollIntoViewIfNeeded();
+        await pause(page, 3_000);
+
         await authenticate(context);
         const homepages = await callKw(context, "ir.ui.view", "search_read", [[
             ["key", "=", "website.homepage"],
@@ -88,17 +104,6 @@ async function pause(page, milliseconds) {
             throw new Error(`Expected one homepage, found ${homepages.length}.`);
         }
         originalHomepage = homepages[0];
-
-        const page = await context.newPage();
-        video = page.video();
-        await page.goto(`${baseUrl}/`, { waitUntil: "networkidle", timeout: 60_000 });
-        await pause(page, 4_000);
-        await page.locator(".s_webkit_features").scrollIntoViewIfNeeded();
-        await pause(page, 3_000);
-        await page.locator(".s_webkit_trust").scrollIntoViewIfNeeded();
-        await pause(page, 3_000);
-        await page.locator(".s_webkit_cta").scrollIntoViewIfNeeded();
-        await pause(page, 3_000);
 
         await page.goto(`${baseUrl}/@/?enable_editor=1&debug=assets`, {
             waitUntil: "domcontentloaded",
@@ -132,6 +137,7 @@ async function pause(page, milliseconds) {
         const heading = insertedHero.locator("h1");
         await heading.click({ force: true });
         await heading.evaluate((element) => {
+            element.spellcheck = false;
             const selection = element.ownerDocument.getSelection();
             const range = element.ownerDocument.createRange();
             range.selectNodeContents(element);
@@ -161,22 +167,29 @@ async function pause(page, milliseconds) {
         await page.getByRole("heading", { name: demoTitle }).waitFor({ timeout: 30_000 });
         await pause(page, 4_000);
 
-        await page.setViewportSize({ width: 390, height: 720 });
+        await context.clearCookies();
         await page.goto(`${baseUrl}/`, { waitUntil: "networkidle", timeout: 60_000 });
+        if (await page.locator(
+            "#oe_main_menu_navbar, .o_frontend_to_backend_nav, body.o_builder_open"
+        ).count()) {
+            throw new Error("The closing walkthrough is not an anonymous public session.");
+        }
         await pause(page, 4_000);
         await page.locator(".s_webkit_features").scrollIntoViewIfNeeded();
         await pause(page, 3_000);
         await page.locator(".s_webkit_cta").scrollIntoViewIfNeeded();
         await pause(page, 4_000);
 
-        await page.setViewportSize({ width: 1280, height: 720 });
         await page.goto(`${baseUrl}/`, { waitUntil: "networkidle", timeout: 60_000 });
         await pause(page, 5_000);
 
-        await callKw(context, "ir.ui.view", "write", [
+        const restoreContext = await browser.newContext();
+        await authenticate(restoreContext);
+        await callKw(restoreContext, "ir.ui.view", "write", [
             [originalHomepage.id],
             { arch_db: originalHomepage.arch_db },
         ]);
+        await restoreContext.close();
         originalHomepage = undefined;
         await page.close();
         await context.close();
@@ -184,11 +197,17 @@ async function pause(page, milliseconds) {
         await video.saveAs(rawVideo);
         console.log(JSON.stringify({ rawVideo, restored: true }, null, 2));
     } finally {
-        if (context && originalHomepage) {
-            await callKw(context, "ir.ui.view", "write", [
-                [originalHomepage.id],
-                { arch_db: originalHomepage.arch_db },
-            ]);
+        if (originalHomepage) {
+            const recoveryContext = await browser.newContext();
+            try {
+                await authenticate(recoveryContext);
+                await callKw(recoveryContext, "ir.ui.view", "write", [
+                    [originalHomepage.id],
+                    { arch_db: originalHomepage.arch_db },
+                ]);
+            } finally {
+                await recoveryContext.close();
+            }
         }
         if (context) {
             await context.close();

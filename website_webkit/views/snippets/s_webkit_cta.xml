@@ -8,18 +8,18 @@
                 <div class="webkit_cta_orb position-absolute rounded-circle" aria-hidden="true"/>
                 <div class="row align-items-center g-4 position-relative">
                     <div class="col-xl-8">
-                        <p class="webkit_eyebrow text-uppercase fw-semibold mb-2">Your next clear step</p>
-                        <h2 class="display-4 mb-3">Ready to simplify the way your business works?</h2>
-                        <p class="lead mb-0">Tell us where work feels complicated. We will help you design a clearer path forward.</p>
+                        <p class="webkit_eyebrow text-uppercase fw-semibold mb-2">Map the next handoff</p>
+                        <h2 class="display-4 mb-3">Where does your customer journey lose context?</h2>
+                        <p class="lead mb-0">Bring one real workflow. Northline will map the page, data and team handoffs that should connect in Odoo.</p>
                     </div>
                     <div class="col-xl-4 text-xl-end">
                         <a href="/contactus" class="btn btn-primary btn-lg o_translate_inline">
-                            Let's talk
+                            Discuss your handoffs
                             <i class="fa fa-arrow-right ms-2" aria-hidden="true"/>
                         </a>
                         <p class="webkit_cta_reassurance small mt-3 mb-0">
                             <i class="fa fa-lock me-1" aria-hidden="true"/>
-                            No commitment. Human response within one business day.
+                            Fictional studio demo. No commercial offer is implied.
                         </p>
                     </div>
                 </div>

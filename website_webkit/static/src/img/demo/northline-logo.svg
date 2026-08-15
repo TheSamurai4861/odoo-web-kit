@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 64" role="img" aria-labelledby="title description">
+  <title id="title">Northline</title>
+  <desc id="description">Northline wordmark with a connected path symbol</desc>
+  <g fill="none" fill-rule="evenodd">
+    <rect width="56" height="56" x="4" y="4" rx="18" fill="#F2ECEF"/>
+    <path d="M17 42V22l15 20V22l15 20V22" stroke="#754B67" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="17" cy="22" r="3" fill="#2D6A73"/>
+    <circle cx="47" cy="22" r="3" fill="#2D6A73"/>
+    <text x="72" y="41" fill="#25272A" font-family="Arial, sans-serif" font-size="28" font-weight="700" letter-spacing="-0.8">Northline</text>
+  </g>
+</svg>

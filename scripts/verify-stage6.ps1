@@ -46,7 +46,7 @@ root = Path("website_webkit")
 manifest = ast.literal_eval((root / "__manifest__.py").read_text(encoding="utf-8"))
 
 assert manifest["name"] == "Odoo Web Kit"
-assert manifest["version"] == "19.0.4.0.0"
+assert manifest["version"] == "19.0.5.0.0"
 assert manifest["license"] == "LGPL-3"
 assert manifest["depends"] == ["website"]
 assert manifest["application"] is False
@@ -73,7 +73,7 @@ package_files = sorted(
 allowed_suffixes = {".py", ".xml", ".js", ".scss", ".svg"}
 unexpected = [str(path) for path in package_files if path.suffix not in allowed_suffixes]
 assert not unexpected, unexpected
-assert len(package_files) == 22, len(package_files)
+assert len(package_files) == 23, len(package_files)
 
 package_bytes = sum(path.stat().st_size for path in package_files)
 svg_files = [path for path in package_files if path.suffix == ".svg"]

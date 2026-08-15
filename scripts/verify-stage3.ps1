@@ -65,13 +65,17 @@ for snippet_id in snippet_ids:
     assert len(sections) == 1
     section = sections[0]
     assert snippet_id in section.get("class", "").split()
-    assert section.get("id") is None
+    if snippet_id == "s_webkit_features":
+        assert section.get("id") == "northline-approach"
+    else:
+        assert section.get("id") is None
     for image in section.xpath(".//img"):
         assert image.get("src", "").startswith("/website_webkit/static/")
         assert image.get("alt", "").strip()
         assert "img" in image.get("class", "").split()
     for link in section.xpath(".//a"):
-        assert link.get("href", "").startswith("/")
+        href = link.get("href", "")
+        assert href.startswith("/") or href == "#northline-approach"
 
 registry = etree.parse(str(root / "views/snippets/snippets.xml"), parser)
 assert len(registry.xpath("//t[@snippet-group='webkit']")) == 1

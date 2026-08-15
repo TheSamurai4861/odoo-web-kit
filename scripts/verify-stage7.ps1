@@ -104,8 +104,8 @@ for name, (expected_width, minimum_height) in expected_pngs.items():
 video = media / "odoo-web-kit-demo.mp4"
 assert video.is_file()
 assert 500_000 <= video.stat().st_size <= 10_000_000, video.stat().st_size
-assert "72-second product demo" in readme
-assert "72.134 seconds" in testing
+assert "81-second product demo" in readme
+assert "80.567 seconds" in testing
 
 print("readme_structure=OK")
 print("public_documentation=case-study|architecture|testing")

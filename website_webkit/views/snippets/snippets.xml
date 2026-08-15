@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+<template id="snippets" inherit_id="website.snippets" name="Web Kit Snippets">
+    <xpath expr="//t[@id='installed_snippets_hook']" position="after">
+        <t snippet-group="webkit"
+            t-snippet="website.s_snippet_group"
+            string="Web Kit"
+            t-thumbnail="/website_webkit/static/src/img/wbuilder/webkit_group.svg"/>
+    </xpath>
+
+    <xpath expr="//snippets[@id='snippet_structure']" position="inside">
+        <t t-snippet="website_webkit.s_webkit_hero"
+            string="Web Kit Hero"
+            group="webkit"
+            t-thumbnail="/website_webkit/static/src/img/wbuilder/s_webkit_hero.svg">
+            <keywords>hero, header, conversion, introduction, landing, cta</keywords>
+        </t>
+        <t t-snippet="website_webkit.s_webkit_features"
+            string="Web Kit Features"
+            group="webkit"
+            t-thumbnail="/website_webkit/static/src/img/wbuilder/s_webkit_features.svg">
+            <keywords>features, benefits, services, cards, advantages</keywords>
+        </t>
+        <t t-snippet="website_webkit.s_webkit_trust"
+            string="Web Kit Trust"
+            group="webkit"
+            t-thumbnail="/website_webkit/static/src/img/wbuilder/s_webkit_trust.svg">
+            <keywords>trust, testimonial, quote, review, metrics, social proof</keywords>
+        </t>
+        <t t-snippet="website_webkit.s_webkit_cta"
+            string="Web Kit CTA"
+            group="webkit"
+            t-thumbnail="/website_webkit/static/src/img/wbuilder/s_webkit_cta.svg">
+            <keywords>cta, conversion, contact, lead, action, reassurance</keywords>
+        </t>
+    </xpath>
+</template>
+
+</odoo>

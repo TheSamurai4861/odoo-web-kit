@@ -1,0 +1,49 @@
+.s_webkit_trust {
+    .webkit_quote {
+        @include webkit-surface;
+        background-color: rgba($primary, 0.04);
+    }
+
+    .webkit_quote_mark {
+        height: 2.75rem;
+        color: $primary;
+        font-family: Georgia, serif;
+        font-size: 5rem;
+        line-height: 1;
+    }
+
+    .webkit_avatar {
+        flex: 0 0 auto;
+        width: 3.5rem;
+        height: 3.5rem;
+        object-fit: cover;
+    }
+
+    .webkit_stat {
+        height: 100%;
+        border: 1px solid $webkit-border;
+        border-radius: $border-radius-lg;
+    }
+
+    .webkit_stat_icon {
+        flex: 0 0 auto;
+        width: 3rem;
+        height: 3rem;
+        background-color: rgba($primary, 0.1);
+        color: $primary;
+    }
+
+    @include media-breakpoint-down(sm) {
+        .webkit_quote {
+            padding: $spacer * 1.5 !important;
+        }
+
+        .webkit_quote p {
+            font-size: calc(1.3rem + 0.6vw);
+        }
+
+        .webkit_stat {
+            padding: $spacer !important;
+        }
+    }
+}

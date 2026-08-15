@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+<template id="s_webkit_hero" name="Web Kit Hero">
+    <section class="s_webkit_hero webkit_hero_align_start webkit_hero_media_end o_cc o_cc1 pt96 pb96">
+        <div class="container">
+            <div class="row align-items-center g-4 g-xl-5">
+                <div class="col-xl-6">
+                    <p class="webkit_eyebrow mb-3">
+                        <span class="webkit_badge d-inline-flex align-items-center gap-2 rounded-pill px-3 py-2">
+                            <i class="fa fa-circle" aria-hidden="true"/>
+                            Built for growing teams
+                        </span>
+                    </p>
+                    <h1 class="display-2 mb-4">
+                        Your operations deserve a <span class="webkit_accent">better digital experience.</span>
+                    </h1>
+                    <p class="lead mb-4">
+                        Northline helps growing businesses simplify their digital workflows and turn complex processes into clear experiences.
+                    </p>
+                    <div class="d-flex flex-column flex-sm-row align-items-sm-center gap-3 mb-5">
+                        <a href="/contactus" class="btn btn-primary btn-lg o_translate_inline">
+                            Start a project
+                            <i class="fa fa-arrow-right ms-2" aria-hidden="true"/>
+                        </a>
+                        <a href="/contactus" class="btn btn-outline-primary btn-lg o_translate_inline">
+                            Discover our services
+                        </a>
+                    </div>
+                    <div class="webkit_trust_strip d-flex flex-wrap align-items-center gap-3 gap-md-4">
+                        <span class="d-inline-flex align-items-center gap-2">
+                            <i class="fa fa-check-circle text-o-color-1" aria-hidden="true"/>
+                            No-code editing
+                        </span>
+                        <span class="d-inline-flex align-items-center gap-2">
+                            <i class="fa fa-check-circle text-o-color-1" aria-hidden="true"/>
+                            Built for Odoo 19
+                        </span>
+                    </div>
+                </div>
+                <div class="col-xl-6">
+                    <div class="webkit_hero_visual position-relative mx-auto">
+                        <div class="webkit_visual_glow position-absolute rounded-circle" aria-hidden="true"/>
+                        <img
+                            src="/website_webkit/static/src/img/demo/hero-workflows.svg"
+                            class="img img-fluid webkit_hero_image position-relative"
+                            alt="Dashboard showing connected business workflows"
+                            loading="eager"
+                        />
+                        <div class="webkit_floating_metric position-absolute d-flex align-items-center gap-3 p-3 o_cc o_cc1">
+                            <span class="webkit_metric_icon d-inline-flex align-items-center justify-content-center rounded-circle">
+                                <i class="fa fa-line-chart" aria-hidden="true"/>
+                            </span>
+                            <span>
+                                <strong class="d-block">+28%</strong>
+                                <small>Team efficiency</small>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</template>
+
+</odoo>

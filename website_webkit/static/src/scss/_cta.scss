@@ -1,0 +1,37 @@
+.s_webkit_cta {
+    .webkit_cta_panel {
+        border: 1px solid rgba($white, 0.16);
+        border-radius: $border-radius-xl;
+        background: linear-gradient(135deg, rgba($white, 0.08), rgba($white, 0.02));
+        box-shadow: $webkit-shadow-lg;
+    }
+
+    .webkit_cta_orb {
+        top: -8rem;
+        right: -5rem;
+        width: 18rem;
+        height: 18rem;
+        background-color: rgba($primary, 0.2);
+        filter: blur(1rem);
+    }
+
+    .webkit_cta_reassurance {
+        opacity: 0.78;
+    }
+
+    @include media-breakpoint-down(xl) {
+        .btn {
+            width: 100%;
+        }
+    }
+
+    @include media-breakpoint-down(sm) {
+        .webkit_cta_panel {
+            padding: $spacer * 1.5 !important;
+        }
+
+        .webkit_cta_orb {
+            right: -9rem;
+        }
+    }
+}

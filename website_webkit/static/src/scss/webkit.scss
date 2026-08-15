@@ -1,0 +1,3 @@
+// Bundle entry point kept deliberately empty.
+// The manifest loads each partial explicitly and in dependency order so the
+// result is deterministic under Odoo's concatenating Sass asset pipeline.

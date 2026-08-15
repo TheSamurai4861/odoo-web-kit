@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+<template id="s_webkit_cta" name="Web Kit CTA">
+    <section class="s_webkit_cta o_cc o_cc5 pt80 pb80">
+        <div class="container">
+            <div class="webkit_cta_panel position-relative overflow-hidden p-4 p-md-5">
+                <div class="webkit_cta_orb position-absolute rounded-circle" aria-hidden="true"/>
+                <div class="row align-items-center g-4 position-relative">
+                    <div class="col-xl-8">
+                        <p class="webkit_eyebrow text-uppercase fw-semibold mb-2">Your next clear step</p>
+                        <h2 class="display-4 mb-3">Ready to simplify the way your business works?</h2>
+                        <p class="lead mb-0">Tell us where work feels complicated. We will help you design a clearer path forward.</p>
+                    </div>
+                    <div class="col-xl-4 text-xl-end">
+                        <a href="/contactus" class="btn btn-primary btn-lg o_translate_inline">
+                            Let's talk
+                            <i class="fa fa-arrow-right ms-2" aria-hidden="true"/>
+                        </a>
+                        <p class="webkit_cta_reassurance small mt-3 mb-0">
+                            <i class="fa fa-lock me-1" aria-hidden="true"/>
+                            No commitment. Human response within one business day.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</template>
+
+</odoo>

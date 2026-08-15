@@ -1,0 +1,124 @@
+.s_webkit_hero {
+    overflow: hidden;
+
+    h1 {
+        max-width: 12ch;
+        font-size: clamp(2.5rem, 5vw, 4.5rem);
+        line-height: 1.08;
+        letter-spacing: -0.035em;
+    }
+
+    .lead {
+        max-width: 42rem;
+    }
+
+    .webkit_badge {
+        border: 1px solid rgba($primary, 0.2);
+        background-color: rgba($primary, 0.08);
+        color: $primary;
+
+        .fa-circle {
+            font-size: 0.5rem;
+        }
+    }
+
+    .webkit_accent {
+        color: var(--o-color-1);
+    }
+
+    .webkit_trust_strip {
+        font-size: $font-size-sm;
+    }
+
+    .webkit_hero_visual {
+        max-width: 42rem;
+        padding: clamp(1rem, 4vw, 2.5rem);
+    }
+
+    .webkit_visual_glow {
+        inset: 5% 8% 10%;
+        background: rgba($primary, 0.14);
+        filter: blur(2.5rem);
+    }
+
+    .webkit_hero_image {
+        display: block;
+        width: 100%;
+        height: auto;
+        filter: drop-shadow(0 1.5rem 2.5rem rgba($body-color, 0.16));
+    }
+
+    .webkit_floating_metric {
+        right: 0;
+        bottom: 8%;
+        min-width: 12rem;
+        border: 1px solid $webkit-border;
+        border-radius: $border-radius-lg;
+        box-shadow: $webkit-shadow-lg;
+    }
+
+    .webkit_metric_icon {
+        width: 2.75rem;
+        height: 2.75rem;
+        background-color: rgba($primary, 0.12);
+        color: $primary;
+    }
+
+    &.webkit_hero_align_center {
+        > .container > .row > .col-xl-6:first-child {
+            text-align: center;
+        }
+
+        h1,
+        .lead {
+            margin-right: auto;
+            margin-left: auto;
+        }
+
+        > .container > .row > .col-xl-6:first-child > .d-flex,
+        .webkit_trust_strip {
+            justify-content: center;
+        }
+    }
+
+    &.o_cc5 {
+        .webkit_badge {
+            border-color: rgba($white, 0.3);
+            background-color: rgba($white, 0.1);
+            color: inherit;
+        }
+
+        .webkit_accent {
+            color: inherit;
+        }
+
+        .webkit_metric_icon {
+            background-color: rgba($white, 0.12);
+            color: inherit;
+        }
+    }
+
+    @include media-breakpoint-up(xl) {
+        &.webkit_hero_media_start {
+            > .container > .row > .col-xl-6:first-child {
+                order: 2;
+            }
+
+            > .container > .row > .col-xl-6:last-child {
+                order: 1;
+            }
+        }
+    }
+
+    @include media-breakpoint-down(sm) {
+        .btn {
+            width: 100%;
+        }
+
+        .webkit_floating_metric {
+            right: 0.25rem;
+            bottom: 0;
+            min-width: 10.5rem;
+        }
+    }
+}

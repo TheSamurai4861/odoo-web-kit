@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<t t-name="website_webkit.WebkitHeroOption">
+    <BuilderRow label.translate="Content alignment">
+        <BuilderButtonGroup>
+            <BuilderButton
+                id="'webkit_hero_align_start'"
+                icon="'fa-align-left'"
+                title.translate="Left"
+                classAction="'webkit_hero_align_start'"
+            />
+            <BuilderButton
+                id="'webkit_hero_align_center'"
+                icon="'fa-align-center'"
+                title.translate="Centered"
+                classAction="'webkit_hero_align_center'"
+            />
+        </BuilderButtonGroup>
+    </BuilderRow>
+    <BuilderRow label.translate="Visual position">
+        <BuilderButtonGroup>
+            <BuilderButton
+                id="'webkit_hero_media_end'"
+                icon="'fa-arrow-right'"
+                title.translate="Right"
+                classAction="'webkit_hero_media_end'"
+            />
+            <BuilderButton
+                id="'webkit_hero_media_start'"
+                icon="'fa-arrow-left'"
+                title.translate="Left"
+                classAction="'webkit_hero_media_start'"
+            />
+        </BuilderButtonGroup>
+    </BuilderRow>
+    <BuilderRow label.translate="Tone">
+        <BuilderButtonGroup>
+            <BuilderButton
+                id="'webkit_hero_tone_soft'"
+                title.translate="Soft"
+                classAction="'o_cc1'"
+            >Soft</BuilderButton>
+            <BuilderButton
+                id="'webkit_hero_tone_contrast'"
+                title.translate="Contrast"
+                classAction="'o_cc5'"
+            >Contrast</BuilderButton>
+        </BuilderButtonGroup>
+    </BuilderRow>
+</t>
+
+</templates>

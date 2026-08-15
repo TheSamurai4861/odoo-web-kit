@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 160 160" role="img" aria-labelledby="title">
+  <title id="title">Portrait illustration of Sophie Lambert</title>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#d8eef0"/>
+      <stop offset="1" stop-color="#79d5df"/>
+    </linearGradient>
+  </defs>
+  <circle cx="80" cy="80" r="80" fill="url(#background)"/>
+  <path d="M35 149c5-30 22-45 45-45s41 15 46 45" fill="#274c53"/>
+  <circle cx="80" cy="69" r="34" fill="#f2c6a8"/>
+  <path d="M48 65c0-28 14-44 36-44 25 0 38 20 34 51-5-5-10-13-12-24-12 13-29 19-56 19z" fill="#5b3b38"/>
+  <path d="M62 86c10 9 25 9 36 0" fill="none" stroke="#a75b59" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="67" cy="69" r="3" fill="#31363b"/>
+  <circle cx="94" cy="69" r="3" fill="#31363b"/>
+  <path d="M75 78c3 2 7 2 10 0" fill="none" stroke="#c58c72" stroke-width="2" stroke-linecap="round"/>
+</svg>

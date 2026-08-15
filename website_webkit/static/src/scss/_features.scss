@@ -1,0 +1,43 @@
+.s_webkit_features {
+    .webkit_feature_card {
+        @include webkit-surface;
+        transition:
+            transform $webkit-transition-duration $webkit-transition-timing,
+            box-shadow $webkit-transition-duration $webkit-transition-timing;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+        .webkit_feature_card:hover {
+            transform: translateY(-0.25rem);
+            box-shadow: $webkit-shadow-lg;
+        }
+    }
+
+    .webkit_feature_icon {
+        width: 3.5rem;
+        height: 3.5rem;
+        background-color: rgba($primary, 0.1);
+        color: $primary;
+        font-size: 1.25rem;
+    }
+
+    .webkit_text_link {
+        display: inline-flex;
+        align-items: center;
+        min-height: 2.75rem;
+        color: $primary;
+        text-decoration: none;
+    }
+
+    .webkit_text_link:hover,
+    .webkit_text_link:focus-visible {
+        text-decoration: underline;
+        text-underline-offset: 0.25em;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .webkit_feature_card:hover {
+            transform: none;
+        }
+    }
+}

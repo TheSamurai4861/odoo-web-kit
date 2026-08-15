@@ -1,0 +1,9 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Editors and operating system
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="82" height="60" viewBox="0 0 82 60" role="img" aria-labelledby="title">
+  <title id="title">Web Kit</title>
+  <rect width="82" height="60" rx="4" fill="#2f5f66"/>
+  <g fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="15" y="13" width="52" height="34" rx="3" stroke-width="2"/>
+    <path d="M15 22h52M24 17h1M30 17h1M36 17h1" stroke-width="2"/>
+    <path d="M24 30h14v9H24zM44 30h14M44 35h11M44 40h8" stroke-width="1.5"/>
+  </g>
+</svg>

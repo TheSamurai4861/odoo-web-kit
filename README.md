@@ -8,6 +8,8 @@ Features, Trust and CTA.
 The addon adds a `Web Kit` category to the native Website Builder. Editors can
 drag, edit, duplicate, reorder and save its blocks with Odoo's standard tools.
 
+![Northline](docs/media/homepage-desktop.png)
+
 [Watch the Builder demo](docs/media/odoo-web-kit-demo.mp4)
 
 ## Why
@@ -91,9 +93,9 @@ parsing, media contracts and Lighthouse:
 .\scripts\verify-stage7.ps1 -Full
 ```
 
-One retained Lighthouse reference: the desktop run on **13 August 2026** at
-commit `77ef2c4` recorded a **performance score of 86**. See
-[Testing](docs/testing.md) for current criteria.
+One retained Lighthouse reference: the desktop run on **13 August 2026**
+recorded a **performance score of 86**. See [Testing](docs/testing.md) for
+current criteria.
 
 ## Trade-offs
 

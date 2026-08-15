@@ -74,7 +74,8 @@ for phrase in (
     "world-class",
 ):
     assert phrase not in public_text, phrase
-assert "13 august 2026" in readme.lower() and "77ef2c4" in readme
+assert "13 august 2026" in readme.lower()
+assert "performance score of 86" in readme.lower()
 
 paragraph_owners = {}
 for name, text in {

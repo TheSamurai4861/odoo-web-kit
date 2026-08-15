@@ -1,132 +1,67 @@
 # Architecture
 
-## Repository layout
+## System map
 
-```text
-website_webkit/
-├── __init__.py
-├── __manifest__.py
-├── views/snippets/
-│   ├── snippets.xml
-│   ├── s_webkit_hero.xml
-│   ├── s_webkit_features.xml
-│   ├── s_webkit_trust.xml
-│   └── s_webkit_cta.xml
-└── static/src/
-    ├── builder/
-    │   ├── webkit_hero_option.xml
-    │   └── webkit_hero_option_plugin.js
-    ├── img/
-    │   ├── demo/
-    │   └── wbuilder/
-    └── scss/
-        ├── _tokens.scss
-        ├── _hero.scss
-        ├── _features.scss
-        ├── _trust.scss
-        ├── _cta.scss
-        └── webkit.scss
+```mermaid
+flowchart LR
+    M[__manifest__.py] --> Q[QWeb snippets]
+    M --> F[Frontend SCSS]
+    M --> B[Builder-only option plugin]
+    Q --> P[Saved Odoo page architecture]
+    B --> P
+    F --> R[Public rendering]
+    P --> R
+    S[Local SVG assets] --> Q
 ```
 
-The addon is declarative. It does not define Python models, controllers,
-security rules or database tables.
+`website_webkit` depends only on Odoo's `website` module. It defines no Python
+model, controller, access rule or database table.
 
-## Module boundary
+## Decision 1 — Store editable content as native page markup
 
-`website_webkit` depends only on Odoo's `website` module. The repository root is
-an addons path; the Odoo source tree remains a separate sibling directory.
+`views/snippets/snippets.xml` inherits the Website snippet registry and adds one
+group with four previews. Each preview inserts a QWeb template whose root is a
+single semantic `<section>`.
 
-The manifest has three responsibilities:
+Odoo copies that section into the page architecture. Text, images and links are
+therefore regular Website content rather than values held in a parallel state
+store. The Hero option plugin applies mutually exclusive classes for alignment,
+media position and tone; Odoo persists those classes with the page.
 
-1. load the four snippet templates and the Website Builder registry extension;
-2. add component SCSS to `web.assets_frontend`;
-3. add the Hero option component only to
-   `website.website_builder_assets`.
+## Decision 2 — Separate public assets from authoring assets
 
-This separation prevents Builder-specific JavaScript and templates from being
-served as custom public-page behavior.
+The manifest sends six namespaced SCSS sources to `web.assets_frontend` and the
+Hero option template/plugin to `website.website_builder_assets`.
 
-## Snippet registration
+```text
+Public visitor: QWeb + Odoo/Bootstrap + Web Kit SCSS + local SVG
+Editor only:    public assets + Hero option Owl template/plugin
+```
 
-`views/snippets/snippets.xml` inherits `website.snippets`. It registers one
-draggable `Web Kit` group and four previews. Each preview points to one QWeb
-template with a single root `<section>`.
+Selectors are scoped below `.s_webkit_*`, with `.webkit_*` for internal elements
+and variants. This prevents Web Kit styles from targeting unrelated page
+markup. The public bundle contains no Web Kit JavaScript or remote asset URL.
 
-When an editor inserts a block, Odoo copies that section into the page's
-architecture. The section carries `data-snippet` and `data-name` metadata so it
-continues to participate in native selection, duplication and movement.
+## Decision 3 — Keep product data separate from demonstration state
 
-## Public components
+The addon installs canonical block templates, not the Northline homepage. The
+development page lives in `webkit_dev` and can be rebuilt from those templates
+with `scripts/compose-stage3-homepage.py`. Header, footer and demo identity are
+applied or restored with `scripts/configure-northline-demo.ps1`.
 
-Each component follows the same boundary:
+Browser checks save page state before editing and restore it during cleanup.
+Lifecycle checks use a disposable database, isolated HTTP port and unconditional
+cleanup. This keeps installable module data independent from screenshots and
+local acceptance state.
 
-- semantic QWeb markup owns content and document structure;
-- Bootstrap/Odoo utilities own the main responsive layout;
-- namespaced SCSS owns visual treatment and component variants;
-- local SVG files provide editable images and Builder previews.
+## Source map
 
-Selectors begin with `.s_webkit_` for snippet roots or `.webkit_` for internal
-elements and variants. The styles do not target generic HTML elements outside
-their snippet root.
-
-## Hero options
-
-The Builder plugin extends Odoo 19's `BaseOptionComponent`. Its selector is
-`.s_webkit_hero`, so the option panel appears only for a selected Hero.
-
-The Owl template declares three `BuilderButtonGroup` rows. Buttons use
-`classAction` to manage mutually exclusive classes:
-
-| Setting | Classes |
+| Path | Responsibility |
 |---|---|
-| Content alignment | `webkit_hero_align_start`, `webkit_hero_align_center` |
-| Visual position | `webkit_hero_media_end`, `webkit_hero_media_start` |
-| Tone | `o_cc1`, `o_cc5` |
+| `website_webkit/views/snippets/` | Four QWeb templates and Builder registration |
+| `website_webkit/static/src/scss/` | Tokens and component presentation |
+| `website_webkit/static/src/builder/` | Hero options available only in the editor |
+| `website_webkit/static/src/img/` | Local content and preview SVG files |
+| `scripts/` | Development composition, browser checks and lifecycle acceptance |
 
-There is no custom action protocol or frontend state store. Odoo applies the
-class, saves it in the page architecture and restores the active option from
-the DOM when the editor reopens.
-
-## Design tokens and responsive behavior
-
-`_tokens.scss` maps component values to Odoo/Bootstrap variables for color,
-spacing, radius, border and shadow. Component partials consume those tokens and
-remain scoped to their root.
-
-The QWeb templates provide the responsive column order. SCSS refines spacing,
-typography and card layout at the existing Bootstrap breakpoints. Interactive
-targets have a minimum height of 44 pixels and explicit `:focus-visible`
-styles. A reduced-motion media query removes nonessential transitions.
-
-## Assets
-
-The public bundle contains six SCSS sources. Web Kit makes no public JavaScript
-request. Seven SVG assets cover the two content illustrations and five Builder
-previews.
-
-All SVG and XML files are parsed without external entities or network access in
-the static checks. The addon contains no remote image, font or script URL.
-
-## Page composition and persistence
-
-The Northline homepage is demonstration state stored in the development
-database, not module data installed into every customer database. The helper
-`scripts/compose-stage3-homepage.py` rebuilds it idempotently from the canonical
-snippet templates.
-
-Browser tests save the original `website.homepage` architecture before making
-editor changes and restore it in cleanup. Lifecycle tests use a dedicated
-`webkit_qa_stage6` database and an isolated HTTP port, then remove both server
-and database state in a `finally` block.
-
-## Verification layers
-
-The scripts deliberately separate concerns:
-
-- static checks validate source contracts without opening a browser;
-- Odoo shell checks validate installed views, assets and persisted markup;
-- Playwright checks validate the real editor and public rendering;
-- lifecycle checks validate install, upgrade, uninstall and reinstall;
-- Lighthouse measures the final public page and Web Kit's request budget.
-
-See [Testing](testing.md) for commands and acceptance criteria.
+See [Testing](testing.md) for the executable contracts around these boundaries.

@@ -47,6 +47,7 @@ required_sections = (
     "## Architecture",
     "## Design and accessibility",
     "## Quality evidence",
+    "## Trade-offs",
     "## Screenshots",
     "## Next steps",
 )
@@ -57,6 +58,42 @@ for public_document in ("case-study.md", "architecture.md", "testing.md"):
 assert "# Case study" in case_study
 assert "# Architecture" in architecture
 assert "# Testing and acceptance" in testing
+assert "```mermaid" in architecture
+assert architecture.count("## Decision ") == 3
+
+readme_word_count = len(re.findall(r"\b[\w'-]+\b", readme))
+assert 300 <= readme_word_count <= 600, readme_word_count
+public_text = "\n".join((readme, case_study, architecture, testing)).lower()
+for phrase in (
+    "production-ready",
+    "best-in-class",
+    "cutting-edge",
+    "enterprise-grade",
+    "pixel-perfect",
+    "world-class",
+):
+    assert phrase not in public_text, phrase
+assert "13 august 2026" in readme.lower() and "77ef2c4" in readme
+
+paragraph_owners = {}
+for name, text in {
+    "README.md": readme,
+    "case-study.md": case_study,
+    "architecture.md": architecture,
+    "testing.md": testing,
+}.items():
+    for paragraph in re.split(r"\n\s*\n", text):
+        normalized = " ".join(paragraph.split())
+        if (
+            len(normalized) >= 120
+            and not normalized.startswith(("#", "|", "```", "- "))
+        ):
+            paragraph_owners.setdefault(normalized, []).append(name)
+duplicate_paragraphs = {
+    paragraph: owners for paragraph, owners in paragraph_owners.items()
+    if len(set(owners)) > 1
+}
+assert not duplicate_paragraphs, duplicate_paragraphs
 
 markdown_files = [
     root / "README.md",
@@ -104,9 +141,13 @@ for name, (expected_width, minimum_height) in expected_pngs.items():
 video = media / "odoo-web-kit-demo.mp4"
 assert video.is_file()
 assert 500_000 <= video.stat().st_size <= 10_000_000, video.stat().st_size
-assert "81-second product demo" in readme
-assert "80.567 seconds" in testing
+assert "[Watch the Builder demo](docs/media/odoo-web-kit-demo.mp4)" in readme
+assert "between 60 and 90 seconds" in testing
 
+print(f"readme_words={readme_word_count}")
+print("editorial_claims=OK")
+print("architecture_decisions=3")
+print("cross_document_duplicates=ABSENT")
 print("readme_structure=OK")
 print("public_documentation=case-study|architecture|testing")
 print("documentation_links=OK")

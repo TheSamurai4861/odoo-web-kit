@@ -1,126 +1,70 @@
-# Case study — Building natively inside Odoo Website
+# Case study — Four native blocks for Odoo Website
 
 ## Context
 
-Odoo Web Kit started as a focused way to learn how Odoo 19 Website works from
-the inside. I did not want to build a standalone landing page and place it next
-to Odoo. The result had to behave like part of the product: appear in the
-Website Builder, support drag and drop, use native editing tools and persist
-after saving.
+I built Web Kit to understand the Odoo 19 Website Builder as an extension
+surface, not as a container for an unrelated landing page. The result had to
+appear in the block picker, use the standard editing controls and preserve page
+changes after saving.
 
-Northline is the fictional business used to demonstrate the blocks. It is not
-a client project and the testimonial and metrics are sample content.
+Northline is the fictional scenario used in the screenshots. Its company,
+testimonial and metrics do not represent a client or measured business result.
 
-## The problem
+## Question and scope
 
-Odoo Website already offers a large block library. The exercise was therefore
-not to reproduce a complete theme, but to answer a narrower question:
+Odoo already ships a broad block library. Reproducing it would not test much.
+The useful question was narrower:
 
-> Can a small set of opinionated blocks feel native to Odoo while still having
-> a recognizable visual direction?
+> Can four opinionated blocks keep their visual identity while behaving like
+> normal Odoo Website content?
 
-The main risks were integration rather than visual design:
+The module therefore contains one category, four blocks and three Hero options.
+It excludes business models, a form backend, dynamic card records and public
+animation code.
 
-- registering a dedicated block category correctly;
-- keeping editable content compatible with Odoo's authoring surface;
-- loading public styles without leaking Builder code to visitors;
-- using Odoo 19's current option API rather than legacy snippet hooks;
-- preserving the result through install, upgrade and reinstallation.
+## Three product decisions
 
-## Scope
+### Target the current Odoo 19 Builder API
 
-The module contains four blocks:
+I chose Odoo 19 rather than building a compatibility layer across releases.
+The Hero options use the current `BaseOptionComponent`, Owl templates and class
+actions. This keeps the example small enough to explain and makes its version
+boundary explicit.
 
-| Block | Job |
-|---|---|
-| Hero | Introduce the offer with two actions and a supporting visual |
-| Features | Explain three benefits in a scannable layout |
-| Trust | Add a testimonial, identity and outcome indicators |
-| CTA | Close the page with one clear next step |
+### Finish four blocks before adding breadth
 
-The Hero also exposes three native Builder options: content alignment, visual
-position and tone.
+Hero, Features, Trust and CTA are enough to compose and test a complete page.
+Limiting the collection let me exercise every block through insertion, editing,
+duplication, movement and reload at each target width. A larger catalogue would
+have added examples without adding a new integration problem.
 
-I deliberately excluded dynamic card management, a custom form backend,
-animation JavaScript and business models. Those features would have increased
-the surface area without improving the core demonstration.
+### Ship no public JavaScript
 
-## Approach
-
-### Prove the integration first
-
-I began with the smallest possible vertical slice: one category, one basic
-snippet, installation in Odoo and a saved page. This isolated manifest, asset
-and registry problems before visual work began.
-
-### Build with Odoo primitives
-
-The final blocks use semantic QWeb templates, Bootstrap layout utilities and
-Odoo color classes. Component SCSS is namespaced with `s_webkit_` or
-`webkit_`. The public page does not load custom JavaScript.
-
-### Keep Builder behavior declarative
-
-The Hero options use Odoo 19 Builder components and class actions. Each option
-changes a class on the selected Hero, so the saved HTML remains understandable
-and the CSS owns the presentation.
-
-### Treat the demo as a lifecycle, not a screenshot
-
-The acceptance checks exercise the behavior an editor relies on: finding the
-category, inserting a block, editing content, duplicating, reordering, saving
-and reloading. A separate disposable database checks fresh installation,
-upgrade, uninstall and reinstall.
-
-## Key decisions
-
-### Four finished blocks instead of a large library
-
-A smaller collection made it possible to test every block in the editor and at
-all target widths. It also kept the visual language consistent.
-
-### Local SVG assets
-
-All preview and demonstration illustrations are stored with the addon. This
-avoids external requests, licensing ambiguity and screenshots that change over
-time.
-
-### No public JavaScript
-
-The blocks do not need runtime behavior. Avoiding public JavaScript reduces the
-download and removes a source of editor/public-page divergence. The only
-JavaScript file registers the Hero option component in Builder assets.
-
-### Theme-aware colors
-
-The styles build on Odoo and Bootstrap variables rather than defining an
-independent hardcoded palette. The blocks can therefore inherit more of the
-active website theme.
+The blocks do not need runtime state. QWeb, Bootstrap and SCSS cover their
+public behavior, so I kept the single JavaScript plugin inside Builder assets.
+That choice reduces the public asset surface and avoids separate editor and
+visitor implementations.
 
 ## Result
 
-The addon installs on Odoo 19 Community and adds a `Web Kit` category containing
-the four blocks. The Northline page is composed entirely from those snippets
-between Odoo's native header and footer.
+Installing the addon adds a `Web Kit` category with four draggable previews.
+The Hero's alignment, media position and tone are stored as classes in the page
+architecture. The other blocks remain editable with Odoo's standard content,
+image and link tools.
 
-The test suite covers five viewport widths, keyboard focus, reduced motion,
-200% zoom, secure XML/SVG parsing, asset budgets and the complete module
-lifecycle. The demonstration video shows the Builder workflow rather than only
-the rendered homepage.
+Acceptance runs cover the editor workflow, five viewport widths, keyboard
+focus, reduced motion, 200% reflow and the install/upgrade/uninstall/reinstall
+lifecycle. Local SVG files keep the demo independent of remote media.
 
-## Trade-offs
+## Limits
 
-- Northline content is static demonstration data, not reusable demo records.
-- Only the Hero has dedicated design options.
-- The module has no translation catalogue yet.
-- The current full development harness was created for Windows and is being
-  separated from the portable source checks before public release.
-- No backend model is included because the project focuses on Website Builder
-  integration.
+- Northline is database state for the demonstration, not reusable module data.
+- Only the Hero exposes component-specific options.
+- There is no translation catalogue or cross-theme acceptance run yet.
+- The full browser harness still assumes the documented Windows development
+  environment; portable checks are a separate release task.
 
-## What I would do next
-
-Before expanding the block library, I would test the four existing blocks with
-two contrasting Odoo themes and ask another user to build the page from a clean
-database using only the README. The result of those tests should decide whether
-the next investment belongs in more options, translations or simpler defaults.
+The next useful input is observation, not another feature list: have another
+editor install the addon on a clean database and build the page from the README.
+That session should determine whether simpler defaults, translations or more
+options deserve priority.

@@ -1,158 +1,70 @@
 # Testing and acceptance
 
-## Test strategy
+## Commands
 
-The suite tests the addon at four levels. A lower level failing stops the higher
-levels so browser output is not used to hide a source or installation problem.
+The local acceptance harness expects Odoo at `127.0.0.1:8069`, PostgreSQL at
+`127.0.0.1:5433` and the development database `webkit_dev`.
 
-| Level | Main evidence |
+| Command | Purpose |
 |---|---|
-| Static | Manifest, asset paths, JavaScript syntax, secure XML/SVG parsing and package budgets |
-| Odoo | Installed module state, combined snippet registry, compiled assets and persisted homepage |
-| Browser | Builder workflow, editing, options, responsive layout, accessibility and cleanup |
-| Lifecycle | Fresh install, upgrade, uninstall, reinstall and disposable-database cleanup |
+| `.\scripts\verify-stage7.ps1` | Source, installed addon, documentation and committed-media checks |
+| `.\scripts\verify-stage6.ps1 -Browser` | Editor behavior, responsive layout, accessibility and 200% reflow |
+| `.\scripts\verify-stage6-lifecycle.ps1` | Fresh install, upgrade, uninstall, reinstall and database cleanup |
+| `.\scripts\verify-stage7.ps1 -Full` | Complete release gate, including Lighthouse and a clean Git tree |
+| `.\scripts\generate-stage7-media.ps1` | Regenerate six screenshots and the demonstration video |
 
-## Quick validation
+The lifecycle command refuses to reuse an existing `webkit_qa_stage6` database.
+It starts an isolated server on port 8070 and removes the database during
+cleanup.
 
-With the local Odoo and PostgreSQL services running:
+## Acceptance matrix
 
-```powershell
-.\scripts\verify-stage7.ps1
-```
+| Boundary | Executable contract |
+|---|---|
+| Package | Manifest metadata, declared files and asset order are valid |
+| Source | Python/JavaScript syntax and XML/SVG parsing succeed without external entities |
+| Registry | One `Web Kit` group exposes exactly Hero, Features, Trust and CTA |
+| Editing | Insert, edit, duplicate, move, save and reload preserve native content |
+| Hero options | Alignment, media position and tone persist and remain instance-specific |
+| Public page | Four blocks render in order without failed Web Kit resources or public JavaScript |
+| Responsive | No horizontal overflow at 1440, 1024, 768, 390 or 360 px |
+| Accessibility | Semantic names, contrast, 44 px actions, focus order, reduced motion and 200% reflow pass |
+| Lifecycle | User page survives upgrade and reinstall; module records disappear on uninstall |
+| Cleanup | Browser page state, QA server and disposable database are restored or removed |
+| Documentation | Local links resolve and committed media satisfy their format contracts |
 
-This command replays the static and server-side guarantees from the previous
-stages, validates the public documentation and probes all committed media. It
-does not create the lifecycle database or rerun Lighthouse.
+## Package contracts
 
-## Full acceptance gate
+| Asset group | Maximum |
+|---|---:|
+| Complete addon | 65,536 bytes |
+| SCSS | 16,384 bytes |
+| SVG | 16,384 bytes total; 8,192 bytes per file |
+| Builder assets | 8,192 bytes |
+| Public Web Kit JavaScript | 0 requests |
 
-```powershell
-.\scripts\verify-stage7.ps1 -Full
-```
+The scripts print current file counts and byte totals instead of copying those
+values into documentation. Lighthouse acceptance requires at least 70 for
+performance and 90 for accessibility, best practices and SEO, plus zero failed
+Web Kit requests.
 
-The full gate adds:
+## Media contracts
 
-- drag, edit, duplicate, move, save and reload in the Website Builder;
-- Hero option persistence and isolation between duplicated instances;
-- rendering at 1440, 1024, 768, 390 and 360 pixels;
-- keyboard order, visible focus and 200% zoom reflow;
-- fresh install, upgrade, uninstall and reinstall in `webkit_qa_stage6`;
-- Lighthouse desktop categories and Web Kit request budgets;
-- a clean Git tree with a meaningful local history.
+The media generator records the real Builder workflow, restores the homepage
+and encodes H.264 at 1280 × 720 with `yuv420p`. Validation requires six named PNG
+captures, bounded file sizes and an MP4 duration between 60 and 90 seconds.
 
-The disposable lifecycle refuses to overwrite an existing QA database. It uses
-port 8070, waits for HTTP readiness and removes the database in a `finally`
-block. The persistent development database is `webkit_dev` on port 8069.
-
-## Media generation
-
-```powershell
-.\scripts\generate-stage7-media.ps1
-```
-
-This regenerates six screenshots, records the Browser workflow, restores the
-homepage and encodes the final MP4. Playwright's private FFmpeg binary must be
-installed once in the local browser harness:
+Playwright's FFmpeg binary is installed once in the local browser harness:
 
 ```powershell
 cd ..\.runtime\browser-check
 npx playwright-core install ffmpeg
 ```
 
-Media assertions check PNG signatures and dimensions, file-size budgets and the
-video stream contract. The committed demonstration is 80.567 seconds, H.264,
-1280 × 720 and `yuv420p`.
+## Diagnosing failures
 
-## Functional acceptance matrix
-
-| Area | Acceptance criterion |
-|---|---|
-| Registry | One Web Kit group and exactly four previews |
-| Hero | Text, image and links editable; three native options persist |
-| Features | Three cards render and native duplication/movement remain available |
-| Trust | Testimonial, identity, rating and metrics remain editable |
-| CTA | Final action remains a native internal link |
-| Persistence | Saved content and block order survive a reload |
-| Cleanup | Browser tests restore the canonical four-block homepage |
-| Lifecycle | User page survives upgrade and module reinstall |
-
-## Responsive and accessibility matrix
-
-| Check | Contract |
-|---|---|
-| Horizontal layout | Document width equals viewport width at every target size |
-| Images | Every image completes with a non-zero natural width |
-| Text | No masked element has clipped content |
-| Actions | Minimum rendered height of 44 pixels |
-| Headings | One public `<h1>` and a logical section hierarchy |
-| Names | No unnamed or invalid links and no duplicate IDs |
-| Contrast | Tested component combinations meet WCAG AA for normal text |
-| Keyboard | Six primary actions receive focus in visual order |
-| Focus | Explicit outline, offset and halo remain visible |
-| Motion | Nonessential transforms/transitions are disabled when requested |
-| Zoom | 200% simulation reflows without a horizontal scrollbar |
-
-## Package budgets
-
-The release checks exclude ignored Python caches and enforce these upper bounds:
-
-| Asset group | Budget |
-|---|---:|
-| Complete addon | 65,536 bytes |
-| SCSS | 16,384 bytes |
-| SVG | 16,384 bytes total and 8,192 bytes per file |
-| Builder assets | 8,192 bytes |
-| Public Web Kit JavaScript | 0 requests |
-
-At the documented Stage 6 reference, before the Northline logo was added, the
-addon contained 22 deliverable files for 32,935 bytes. Current package totals
-are emitted by `verify-stage6.ps1`; the public-page budget remains enforced by
-Lighthouse.
-
-## Lighthouse reference
-
-The Stage 6 desktop reference recorded:
-
-| Category | Score |
-|---|---:|
-| Performance | 86 |
-| Accessibility | 95 |
-| Best practices | 96 |
-| SEO | 100 |
-
-The gate thresholds are deliberately lower than a single observed run to allow
-normal machine variance: 70 for performance and 90 for the other categories.
-Regardless of the aggregate page score, Web Kit must keep zero public
-JavaScript requests, zero failed requests and zero accessibility failure tied
-to its sections.
-
-## Known environment messages
-
-Concurrent browser visits can trigger `website_visitor` serialization retries
-inside Odoo. The server recovers them; the scripts count them separately and
-continue to fail on any other error or traceback.
-
-On Windows, Chrome Launcher can occasionally report `EPERM` while removing its
-temporary profile after Lighthouse has written the report. The wrapper accepts
-that cleanup error only after parsing a complete report and passing every score
-and Web Kit assertion.
-
-Some Odoo dependency metadata emits Docutils indentation warnings during module
-lifecycle operations. They do not originate from the Web Kit manifest and are
-not present as runtime errors in the QA log.
-
-## Last accepted full run
-
-The final Stage 7 gate completed successfully before this documentation
-consolidation with:
-
-- fresh install and four registered snippets;
-- persisted Hero option after save and upgrade;
-- clean uninstall and reinstall;
-- `qa_database_cleanup=OK`;
-- Lighthouse 89 / 95 / 100 / 100 on that run;
-- six valid screenshots and the 80.567-second video;
-- no unexpected current-process Odoo log issue.
-
-The gate must be run again after any source, branding or media change intended
-for release.
+The scripts keep the detailed failure context: viewport evidence, selected
+classes, HTTP state, browser exceptions and lifecycle log paths. Expected Odoo
+`website_visitor` serialization retries are counted separately; any unrelated
+traceback still fails the run. The lifecycle wrapper also distinguishes known
+dependency Docutils warnings from errors produced by this addon.

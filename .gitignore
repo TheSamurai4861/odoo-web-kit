@@ -7,3 +7,23 @@ __pycache__/
 .vscode/
 .DS_Store
 Thumbs.db
+
+# Local configuration and secrets
+.env
+.env.*
+secrets/
+*.secret
+
+# Runtime and generated reports
+.runtime/
+*.log
+*.pid
+lighthouse-*.json
+playwright-report/
+test-results/
+*.webm
+
+# Private planning and application notes
+docs/analyse_offre_odoo.md
+docs/analyse_offre_odoo.pdf
+docs/roadmap_finalisation_github.md

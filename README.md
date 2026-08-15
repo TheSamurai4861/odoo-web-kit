@@ -32,14 +32,24 @@ Requirements: Odoo 19 Community, Python 3.12 and PostgreSQL 13 or newer.
 
 1. Add the repository root to Odoo's `addons_path`.
 2. Update the Apps list.
-3. Install **Odoo Web Kit**, or run:
+3. Install **Odoo Web Kit** from Apps, or run one of these commands from the
+   Odoo source directory.
 
-```powershell
-python odoo-bin -d <database> -i website_webkit --stop-after-init
+Linux and macOS:
+
+```bash
+python3 odoo-bin -d <database> \
+  --addons-path="addons,odoo/addons,/absolute/path/to/web-kit" \
+  -i website_webkit --stop-after-init
 ```
 
-The only Odoo dependency is `website`; the addon has no external runtime
-package.
+Windows PowerShell:
+
+```powershell
+python odoo-bin -d <database> `
+  --addons-path="addons,odoo/addons,C:\path\to\web-kit" `
+  -i website_webkit --stop-after-init
+```
 
 ## Use
 
@@ -67,6 +77,12 @@ zoom.
 
 ## Quality evidence
 
+Portable source checks run on Linux in GitHub Actions and locally with:
+
+```bash
+python3 scripts/verify-portable.py
+```
+
 The full gate exercises installation, upgrade, uninstall/reinstall, Builder
 editing and persistence, responsive behavior, keyboard navigation, source
 parsing, media contracts and Lighthouse:
@@ -76,8 +92,8 @@ parsing, media contracts and Lighthouse:
 ```
 
 One retained Lighthouse reference: the desktop run on **13 August 2026** at
-commit `77ef2c4` recorded a **performance score of 86**. Current acceptance
-criteria and reproducible commands are in [Testing](docs/testing.md).
+commit `77ef2c4` recorded a **performance score of 86**. See
+[Testing](docs/testing.md) for current criteria.
 
 ## Trade-offs
 
@@ -90,6 +106,8 @@ the repository focused on Website Builder integration.
 - [Case study](docs/case-study.md) — scope, decisions and limits.
 - [Architecture](docs/architecture.md) — QWeb, asset and state boundaries.
 - [Testing](docs/testing.md) — commands and acceptance contracts.
+- [Contributing](CONTRIBUTING.md) — environment, conventions and pull requests.
+- [Changelog](CHANGELOG.md) — released behavior by addon version.
 
 ## Screenshots
 
@@ -103,3 +121,8 @@ the repository focused on Website Builder integration.
 
 Test contrasting Odoo themes, add translations and decide whether the remaining
 blocks need options after observing another editor use the collection.
+
+## License
+
+Odoo Web Kit is released under the [GNU Lesser General Public License v3](LICENSE),
+matching the `LGPL-3` declaration in the addon manifest.

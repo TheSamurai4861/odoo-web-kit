@@ -34,8 +34,9 @@ from pathlib import Path
 
 root = Path.cwd()
 readme = (root / "README.md").read_text(encoding="utf-8")
-report = (root / "docs/stage7_delivery.md").read_text(encoding="utf-8")
-roadmap = (root / "docs/odoo_web_kit_roadmap.md").read_text(encoding="utf-8")
+case_study = (root / "docs/case-study.md").read_text(encoding="utf-8")
+architecture = (root / "docs/architecture.md").read_text(encoding="utf-8")
+testing = (root / "docs/testing.md").read_text(encoding="utf-8")
 
 required_sections = (
     "# Odoo Web Kit",
@@ -51,13 +52,18 @@ required_sections = (
 )
 for section in required_sections:
     assert section in readme, section
-assert "stage7_delivery.md" in readme
-assert "stage7_delivery.md" in roadmap
-stage7_section = roadmap.split("## 7.", 1)[1].split("## Bonus", 1)[0]
-assert "**Statut :" in stage7_section
-assert "stage7_delivery.md" in stage7_section
+for public_document in ("case-study.md", "architecture.md", "testing.md"):
+    assert public_document in readme, public_document
+assert "# Case study" in case_study
+assert "# Architecture" in architecture
+assert "# Testing and acceptance" in testing
 
-markdown_files = [root / "README.md", *sorted((root / "docs").glob("*.md"))]
+markdown_files = [
+    root / "README.md",
+    root / "docs/case-study.md",
+    root / "docs/architecture.md",
+    root / "docs/testing.md",
+]
 missing_links = []
 for document in markdown_files:
     text = document.read_text(encoding="utf-8")
@@ -99,9 +105,10 @@ video = media / "odoo-web-kit-demo.mp4"
 assert video.is_file()
 assert 500_000 <= video.stat().st_size <= 10_000_000, video.stat().st_size
 assert "72-second product demo" in readme
-assert "72,134 secondes" in report
+assert "72.134 seconds" in testing
 
 print("readme_structure=OK")
+print("public_documentation=case-study|architecture|testing")
 print("documentation_links=OK")
 print("stage7_screenshots=6|dimensions_and_budgets=OK")
 print(f"demo_video_bytes={video.stat().st_size}")

@@ -91,8 +91,11 @@ The documented Stage 6 Lighthouse desktop reference is **86 performance, 95
 accessibility, 96 best practices and 100 SEO**. Web Kit itself transfers 5,877
 bytes across two SVG requests, with no public JavaScript or failed resource.
 
-Detailed evidence is available in
-[the Stage 7 delivery report](docs/stage7_delivery.md).
+## Documentation
+
+- [Case study](docs/case-study.md) — scope, decisions, result and trade-offs.
+- [Architecture](docs/architecture.md) — addon boundary, assets and Builder flow.
+- [Testing](docs/testing.md) — commands, acceptance matrix and known messages.
 
 ## Screenshots
 

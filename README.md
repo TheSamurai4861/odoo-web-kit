@@ -3,12 +3,12 @@
 Four installable, editable website snippets for **Odoo 19 Community**: Hero,
 Features, Trust and CTA.
 
+Created by **Mattéo Vanderheyden**.
+
 ![Northline homepage built with the four Web Kit blocks](docs/media/homepage-desktop.png)
 
 The addon adds a `Web Kit` category to the native Website Builder. Editors can
 drag, edit, duplicate, reorder and save its blocks with Odoo's standard tools.
-
-![Northline](docs/media/homepage-desktop.png)
 
 [Watch the Builder demo](docs/media/odoo-web-kit-demo.mp4)
 

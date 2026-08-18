@@ -21,26 +21,48 @@ function Resolve-WebKitExecutable {
     param(
         [Parameter(Mandatory)][string]$EnvironmentVariable,
         [Parameter(Mandatory)][string[]]$Commands,
-        [string[]]$Candidates = @()
+        [string[]]$Candidates = @(),
+        [switch]$ProbeVersion
     )
+
+    function Test-WebKitExecutable {
+        param([Parameter(Mandatory)][string]$Path)
+
+        if (-not $ProbeVersion) {
+            return $true
+        }
+        try {
+            & $Path --version *> $null
+            return $LASTEXITCODE -eq 0
+        } catch {
+            return $false
+        }
+    }
 
     $explicit = [Environment]::GetEnvironmentVariable($EnvironmentVariable)
     if (-not [string]::IsNullOrWhiteSpace($explicit)) {
         if (-not (Test-Path -LiteralPath $explicit -PathType Leaf)) {
             throw "$EnvironmentVariable points to a missing executable: $explicit"
         }
+        if (-not (Test-WebKitExecutable -Path $explicit)) {
+            throw "$EnvironmentVariable points to an unusable executable: $explicit"
+        }
         return (Resolve-Path -LiteralPath $explicit).Path
     }
 
     foreach ($candidate in $Candidates) {
-        if ($candidate -and (Test-Path -LiteralPath $candidate -PathType Leaf)) {
+        if (
+            $candidate -and
+            (Test-Path -LiteralPath $candidate -PathType Leaf) -and
+            (Test-WebKitExecutable -Path $candidate)
+        ) {
             return (Resolve-Path -LiteralPath $candidate).Path
         }
     }
     foreach ($command in $Commands) {
         $resolved = Get-Command $command -CommandType Application -ErrorAction SilentlyContinue |
             Select-Object -First 1
-        if ($resolved) {
+        if ($resolved -and (Test-WebKitExecutable -Path $resolved.Source)) {
             return $resolved.Source
         }
     }
@@ -107,7 +129,8 @@ function Get-WebKitDevEnvironment {
         -Candidates @(
             (Join-Path $odooRoot ".venv-odoo19\Scripts\python.exe"),
             (Join-Path $odooRoot ".venv-odoo19/bin/python")
-        )
+        ) `
+        -ProbeVersion
     $odooBin = Resolve-WebKitExecutable `
         -EnvironmentVariable "WEBKIT_ODOO_BIN" `
         -Commands @("odoo-bin", "odoo") `
